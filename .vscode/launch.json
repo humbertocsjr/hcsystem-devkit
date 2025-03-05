@@ -1,0 +1,72 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "i86-ld",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bindbg/i86-ld",
+      "args": [
+        "-f",
+        "v7",
+        "-o",
+        "tests/test0.small",
+        "tests/test0.o"
+      ],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "MIMode": "gdb",
+      "preLaunchTask": "make i86-ld",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "i86-as",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bindbg/i86-as",
+      "args": [
+        "-o",
+        "tests/test0.o",
+        "tests/test0.s"
+      ],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "MIMode": "gdb",
+      "preLaunchTask": "make i86-as",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/hcosta/Nextcloud/hcdevkit/ld",
+      "program": "/home/hcosta/Nextcloud/hcdevkit/ld/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

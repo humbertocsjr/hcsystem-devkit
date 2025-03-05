@@ -1,0 +1,17 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make i86-as",
+            "type": "shell",
+            "command": "make bindbg/i86-as"
+        },
+        {
+            "label": "make i86-ld",
+            "type": "shell",
+            "command": "make bindbg/i86-ld"
+        }
+    ]
+}
