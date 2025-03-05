@@ -10,9 +10,9 @@ AR86SRC = $(ARSRC)
 AR86 = i86-ar
 SIZE86SRC = include/devkit.h size/size.c
 SIZE86 = i86-size
-BIN = binlin/i86-ld bindbg/i86-ld bindos/i86-ld.exe binwnt/i86-ld.exe binlin/i86-as bindbg/i86-as bindos/i86-as.exe binwnt/i86-as.exe binlin/i86-size bindbg/i86-size bindos/i86-size.exe binwnt/i86-size.exe binlin/i86-ar bindbg/i86-ar bindos/i86-ar.exe binwnt/i86-ar.exe
+BIN = binlin/i86-ld binpsx/i86-ld bindbg/i86-ld bindos/i86-ld.exe binwnt/i86-ld.exe binlin/i86-as binpsx/i86-as bindbg/i86-as bindos/i86-as.exe binwnt/i86-as.exe binlin/i86-size binpsx/i86-size bindbg/i86-size bindos/i86-size.exe binwnt/i86-size.exe binlin/i86-ar binpsx/i86-ar bindbg/i86-ar bindos/i86-ar.exe binwnt/i86-ar.exe binlin/license bindos/license.txt binwnt/license.txt
 
-all: bindos binwnt binlin bindbg $(BIN)
+all: bindos binwnt binlin bindbg binpsx $(BIN)
 
 clean:
 	@rm -f $(BIN) *.o *.err  tests/*.com  tests/*.sys tests/*.small tests/*.tiny tests/*.hcix tests/*.o tests/*.dis *.zip
@@ -29,12 +29,18 @@ binlin:
 bindbg:
 	@mkdir -p bindbg
 
+binpsx:
+	@mkdir -p binpsx
+
 binlin/i86-ld: $(LD86SRC)
 	@WATCOM=$(WATCOM) wcl386 -d2 -zq -aa -za99 -l=386 -bt=linux  -bcl=linux -dHOST=HOST_POSIX -cc -i=$(WATCOM)/lh -fe=$@ $^
 	@rm -f *.o codegen/*.o
 
 bindbg/i86-ld: $(LD86SRC)
 	@cc -DHOST=HOST_POSIX  -g -o $@ $^
+
+binpsx/i86-ld: $(LD86SRC)
+	@cc -DHOST=HOST_POSIX  -o $@ $^
 
 bindos/i86-ld.exe: $(LD86SRC)
 	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
@@ -51,6 +57,9 @@ binlin/i86-as: $(AS86SRC)
 bindbg/i86-as: $(AS86SRC)
 	@cc -DHOST=HOST_POSIX  -g -o $@ $^
 
+binpsx/i86-as: $(AS86SRC)
+	@cc -DHOST=HOST_POSIX -o $@ $^
+
 bindos/i86-as.exe: $(AS86SRC)
 	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
 	@rm -f *.o target/*.o
@@ -65,6 +74,9 @@ binlin/i86-size: $(SIZE86SRC)
 
 bindbg/i86-size: $(SIZE86SRC)
 	@cc -DHOST=HOST_POSIX  -g -o $@ $^
+
+binpsx/i86-size: $(SIZE86SRC)
+	@cc -DHOST=HOST_POSIX -o $@ $^
 
 bindos/i86-size.exe: $(SIZE86SRC)
 	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
@@ -81,6 +93,9 @@ binlin/i86-ar: $(AR86SRC)
 bindbg/i86-ar: $(AR86SRC)
 	@cc -DHOST=HOST_POSIX  -g -o $@ $^
 
+binpsx/i86-ar: $(AR86SRC)
+	@cc -DHOST=HOST_POSIX -o $@ $^
+
 bindos/i86-ar.exe: $(AR86SRC)
 	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
 	@rm -f *.o target/*.o
@@ -88,6 +103,15 @@ bindos/i86-ar.exe: $(AR86SRC)
 binwnt/i86-ar.exe: $(AR86SRC)
 	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h  -fe=$@ $^
 	@rm -f *.o codegen/*.o
+
+binlin/license: license
+	@cp $< $@
+
+bindos/license.txt: license
+	@cp $< $@
+
+binwnt/license.txt: license
+	@cp $< $@
 
 test-linux: all
 	binlin/i86-as -o tests/test0.o tests/test0.s
@@ -117,3 +141,10 @@ distro: all
 	@cd bindos; zip -q9 ../hcdk-dos.zip *
 	@cd binwnt; zip -q9 ../hcdk-win.zip *
 	@cd binlin; zip -q9 ../hcdk-lin.zip *
+
+install: all
+	@install -d /usr/local/bin
+	@install binpsx/i86-ar /usr/local/bin/i86-ar
+	@install binpsx/i86-as /usr/local/bin/i86-as
+	@install binpsx/i86-ld /usr/local/bin/i86-ld
+	@install binpsx/i86-size /usr/local/bin/i86-size

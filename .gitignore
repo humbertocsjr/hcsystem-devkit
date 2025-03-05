@@ -1,6 +1,7 @@
 *.zip
 bindbg/*
 binlin/*
+binpsx/*
 bindos/*
 binwnt/*
 tests/*.o
