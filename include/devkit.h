@@ -11,8 +11,8 @@
 #include <ctype.h>
 
 #define VERSION 0
-#define REVISION 10
-#define EDITION "alpha"
+#define REVISION 90
+#define EDITION "beta"
 #define HOST_DOS "DOS"
 #define HOST_POSIX "POSIX Compliant"
 #define HOST_WINDOWS "Windows"

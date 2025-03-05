@@ -1,0 +1,13 @@
+*.zip
+bindbg/*
+binlin/*
+bindos/*
+binwnt/*
+tests/*.o
+tests/*.bin
+tests/*.com
+tests/*.dis
+tests/*.hcix
+tests/*.sys
+tests/*.small
+tests/*.tiny
