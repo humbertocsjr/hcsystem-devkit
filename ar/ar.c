@@ -2,8 +2,8 @@
 
 void usage(int retval)
 {
-    printf("HC Development Kit\n");
-    printf("HC Archiver v%d.%d-%s\n", VERSION, REVISION, EDITION);
+    printf("HCSystem Development Kit\n");
+    printf("HCSystem Archiver v%d.%d-%s\n", VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
     printf("Usage: ar [-o output] [-a file] [-l]\n");
     printf("Options:\n");

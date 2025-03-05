@@ -3,8 +3,8 @@
 
 void usage()
 {
-    printf("HC Development Kit\n");
-    printf("HC Object Size v%d.%d-%s\n", VERSION, REVISION, EDITION);
+    printf("HCSystem Development Kit\n");
+    printf("HCSystem Object Size v%d.%d-%s\n", VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
     printf("Usage: size [objects...]\n");
     exit(1);

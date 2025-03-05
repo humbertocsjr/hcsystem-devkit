@@ -104,8 +104,8 @@ void add_library(char *name)
 
 void usage(int retval)
 {
-    printf("HC Development Kit\n");
-    printf("HC Linker v%d.%d-%s\n", VERSION, REVISION, EDITION);
+    printf("HCSystem Development Kit\n");
+    printf("HCSystem Linker v%d.%d-%s\n", VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
     printf("Usage: ld [-f format] [-b] [-o output] [-L dir] [-l library] [-s stack_size] [objects...]\n");
     printf("Options:\n");
@@ -117,6 +117,7 @@ void usage(int retval)
     printf(" -l library      add library (auto include 'lib' prefix)\n");
     printf("Output format:\n");
     printf(" hcix            produce HC-IX a.out\n");
+    printf(" hcsys           produce HCSystem a.out\n");
     printf(" v7|v7small      produce Seventh Edition UNIX a.out\n");
     printf(" v7tiny          tiny model output (text/data/bss in one segment)\n");
     printf(" com             DOS COM executable (ORG 0x100)\n");
@@ -143,7 +144,7 @@ int main(int argc, char **argv)
                 include_bss = 1;
                 break;
             case 'f':
-                if(!strcmp(optarg, "hcix"))
+                if(!strcmp(optarg, "hcix") || !strcmp(optarg, "hcsys"))
                 {
                     _aout.signature = AOUT_HC_IX_EXEC;
                     output = output_aout16;
