@@ -10,6 +10,7 @@ void gen_global_string(char *name, uint16_t size, char *initial_value)
     uint16_t i;
     char c;
     int include = 1;
+    out_word(STAGE_STRING_GEN, get_data_size() + 2);
     out_word(STAGE_STRING_GEN, size);
     for(i = 0; i < size; i++)
     {

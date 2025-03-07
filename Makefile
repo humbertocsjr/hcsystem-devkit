@@ -20,10 +20,7 @@ BIN = binlin/i86-ld binpsx/i86-ld bindbg/i86-ld bindos/i86-ld.exe binwnt/i86-ld.
 
 all: bindos binwnt binlin bindbg binpsx $(BIN)
 	@make --no-print-directory -C lib/libbasic all
-	@make --no-print-directory library
-
-library: $(patsubst %,bindos/%,$(wildcard lib/*.a)) $(patsubst %,bindbg/%,$(wildcard lib/*.a)) $(patsubst %,binlin/%,$(wildcard lib/*.a)) $(patsubst %,binpsx/%,$(wildcard lib/*.a)) $(patsubst %,binwnt/%,$(wildcard lib/*.a))
-	@echo >> /dev/null
+	@make --no-print-directory -C examples all
 
 clean:
 	@rm -f $(BIN) *.o *.err  tests/*.com  tests/*.sys tests/*.small tests/*.tiny tests/*.hcix tests/*.o tests/*.dis *.zip
@@ -33,37 +30,17 @@ clean:
 bindos:
 	@mkdir -p bindos
 
-bindos/lib/%.a: lib/%.a
-	@mkdir -p bindos/lib
-	@cp $< $@
-
 binwnt:
 	@mkdir -p binwnt
-
-binwnt/lib/%.a: lib/%.a
-	@mkdir -p binwnt/lib
-	@cp $< $@
 
 binlin:
 	@mkdir -p binlin
 
-binlin/lib/%.a: lib/%.a
-	@mkdir -p binlin/lib
-	@cp $< $@
-
 bindbg:
 	@mkdir -p bindbg
 
-bindbg/lib/%.a: lib/%.a
-	@mkdir -p bindbg/lib
-	@cp $< $@
-
 binpsx:
 	@mkdir -p binpsx
-
-binpsx/lib/%.a: lib/%.a
-	@mkdir -p binpsx/lib
-	@cp $< $@
 
 binlin/i86-ld: $(LD86SRC)
 	@echo [CC] $@
@@ -252,11 +229,14 @@ test-dos: all
 distro: all
 	@rm -f hcdk-*.zip
 	@echo [ZIP] hcdk-dos.zip
-	@cd bindos; zip -q9 ../hcdk-dos.zip * lib/*
+	@cd bindos; zip -q9 ../hcdk-dos.zip * 
+	@zip -q9 hcdk-dos.zip examples/*.bas examples/*.s examples/*.com lib/*
 	@echo [ZIP] hcdk-win.zip
-	@cd binwnt; zip -q9 ../hcdk-win.zip * lib/*
+	@cd binwnt; zip -q9 ../hcdk-win.zip * 
+	@zip -q9 hcdk-win.zip examples/*.bas examples/*.s examples/*.com lib/*
 	@echo [ZIP] hcdk-lin.zip
-	@cd binlin; zip -q9 ../hcdk-lin.zip * lib/*
+	@cd binlin; zip -q9 ../hcdk-lin.zip * 
+	@zip -q9 hcdk-lin.zip examples/*.bas examples/*.s examples/*.com lib/*
 
 install: all
 	@echo [INSTALL] /usr/local/bin

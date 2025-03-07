@@ -56,6 +56,7 @@ typedef enum tok_t
     TOK_KEY_THEN,
     TOK_KEY_WHILE,
     TOK_KEY_DO,
+    TOK_KEY_LOOP,
     TOK_KEY_END,
     TOK_KEY_UNTIL,
     TOK_KEY_FOR,

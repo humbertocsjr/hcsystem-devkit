@@ -6,5 +6,7 @@ public sub main
     dim a as integer
     if a = 1 then
         a = 2
+    else 
+        a = 3
     end if
 end sub

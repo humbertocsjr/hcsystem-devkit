@@ -142,6 +142,7 @@ token_t *scan()
         if(!strcmp(_peek.text, "then")) _peek.tok = TOK_KEY_THEN;
         if(!strcmp(_peek.text, "while")) _peek.tok = TOK_KEY_WHILE;
         if(!strcmp(_peek.text, "do")) _peek.tok = TOK_KEY_DO;
+        if(!strcmp(_peek.text, "loop")) _peek.tok = TOK_KEY_LOOP;
         if(!strcmp(_peek.text, "end")) _peek.tok = TOK_KEY_END;
         if(!strcmp(_peek.text, "until")) _peek.tok = TOK_KEY_UNTIL;
         if(!strcmp(_peek.text, "for")) _peek.tok = TOK_KEY_FOR;

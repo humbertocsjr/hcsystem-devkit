@@ -35,13 +35,13 @@ DevKit focused on retrocomputers.
 - Assemble source to DOS .COM
 ```sh
 i86-as -o test.o test.s
-i86-ld -f dos -o test.com test.o
+i86-ld -f com -o test.com test.o
 ```
 
-- Compile BASIC source to DOS .COM
+- Compile BASIC source to DOS .COM [DON'T USE. IN DEVELOPMENT]
 ```sh
 i86-basc -o test.o test.bas
-i86-ld -f dos -o test.com -L /usr/local/lib/hcsystem -l libdos.a test.o
+i86-ld -f com -o test.com -L /usr/local/lib/hcsystem -l libdos.a test.o
 ```
 
 - Assemble multiple sources to Library
@@ -51,6 +51,13 @@ i86-as -o test1.o test1.s
 i86-ar -f libtest.a -a test0.o test1.o
 ```
 
+- Assemble multiple sources with Library
+```sh
+i86-as -o test2.o test2.s
+i86-as -o test3.o test3.s
+i86-ld -f com -o test.com -L /libs/path/ -l libtest.a test2.o test3.o
+```
+
 ## Development Reqs
 
 - GNU Make
@@ -58,23 +65,72 @@ i86-ar -f libtest.a -a test0.o test1.o
 - nasm (tests only)
 - dev86/bcc (tests only)
 
-## Versions History
+## Versions Roadmap
 
-- [ ] 0.91
+- [ ] 2.00-final
+    - [ ] Add i80 Target
+    - [ ] Add z80 Target
+    - [ ] Add Assembly Macro Processor
+
+- [ ] 1.00-final
+    - [ ] Add Peek/Poke/Memory Copy to BASIC
+
+- [ ] 0.96-beta
+    - [ ] Add Serial port support
+    - [ ] Add Printer port support
+
+- [ ] 0.95-beta
+    - [ ] Add full console support
+        - [ ] Add locale command
+        - [ ] Add input command
+        - [ ] Add line input command
+        - [ ] Add inkey command
+        - [ ] Add cls command
+
+- [ ] 0.94-beta
+    - [ ] Add File support to BASIC Library
+    - [ ] Add Mid command
+    - [ ] Add Ucase command
+    - [ ] Add Lcase command
+
+- [ ] 0.93-beta
+    - [ ] Add Full Strings support to BASIC Compiler
+        - [ ] Add Chr/Asc inline commands
+        - [ ] Add &(concatenate) symbol
+        - [ ] Add String Equal support
+    - [ ] Add Minimal DOS Library
+        - [ ] Add _start routine
+        - [ ] Add Print command
+        - [ ] Add String Equal
+        - [ ] Add String Allocation
+        - [ ] Add String Concat
+        - [ ] Add String Len
+
+- [ ] 0.92-beta
+    - [ ] Add For command to BASIC
+    - [ ] Add Declare command to BASIC
+    - [ ] Add Return command to BASIC
+    - [ ] Add Exit command to BASIC
+    - [ ] Add Continue command to BASIC
+    - [ ] Add Sub/Functions Arguments support to BASIC
+
+- [x] 0.91-beta
+    - [x] Add BASIC Compiler minimal prototype
+    - [x] Add missing opcodes to Assembler (eg.: cmp REG16, VALUE)
     - [x] Add UNIX NM-like Tool
     - [x] Add NASM dot labels to Assembler
-    - [ ] Add BASIC Compiler
+    - [x] Add ECHO-like example to distribution
 
-- [x] 0.90
+- [x] 0.90-beta
     - [x] Add PCBOOT File format
     - [x] Add UNIX Size-like tool
     - [x] Add Archiver tool
 
-- [x] 0.02
+- [x] 0.02-alpha
     - [x] Add NASM TIMES command to Assembler
     - [x] Add DOS COM/SYS File format
 
-- [x] 0.01
+- [x] 0.01-alpha
     - [x] Add Linker tool
     - [x] Add 8086 Assembler tool
 
@@ -82,11 +138,118 @@ i86-ar -f libtest.a -a test0.o test1.o
 
 Based on NASM language.
 
+- [x] Labels
+    ```nasm
+    main:
+        .test:
+        .end:
+    ```
+- [x] 8086 Opcodes
+    ```nasm
+    mov word [0x123], 0x456
+    ```
+- [x] .text/.data/.bss sections
+    ```nasm
+    section .text
+    section .data
+    section .bss
+    ```
+- [x] db/dw/dd command
+    ```nasm
+    db 0x11
+    dw 0x2222
+    dd 0x44444444
+    ```
+- [x] resb/resw/resd command
+    ```nasm
+    resb 5
+    resw 1
+    resd 3
+    ```
+- [x] times-like command
+    ```nasm
+    times 5 db 5
+    ```
+
 # BASIC Language
 
 __IN DEVELOPMENT__
 
 Based on VB.NET language without classes.
+
+- [X] Basic Math 
+    ```vb
+    a  = 1 * 4 + a / 2 mod 5 shl 1 shr 4
+    ```
+- [X] public / private dim
+    ```vb
+    public dim a as integer
+    private dim b as integer
+    dim c as integer
+    ```
+- [X] public / private function
+    ```vb
+    public function main() as integer
+    end function
+
+    private function hi() as integer
+    end function
+    
+    function test() as integer
+    end function
+    ```
+- [X] public / private sub
+    ```vb
+    public sub hello()
+    end sub
+    
+    private sub hi()
+    end sub
+
+    sub test()
+    end sub
+    ```
+- [X] if then else
+    ```vb
+    if a = 1 then
+    else
+    end if
+    ```
+- [X] do / loop / do while / do until / loop while / loop until
+    ```vb
+    do
+    loop
+
+    do while a < 1
+    loop
+
+    do until a < 1
+    loop
+
+    do
+    loop while a > 2
+
+    do
+    loop until a > 2
+
+    do until a < 10
+    loop while a > 2
+    ```
+- [ ] for to step next
+    ```vb
+    for a = 1 to 4 step 2
+    next
+    ```
+- [ ] string operations
+    ```vb
+    str = "hello"
+    str = str & " world"
+    ```
+- [ ] string comparison
+    ```vb
+    if str = "" then
+    end if
+    ```
 
 # i86-as: Assembler
 

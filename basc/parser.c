@@ -65,6 +65,15 @@ void remove_level(int type)
     _levels_current--;
 }
 
+level_t *get_level(int type)
+{
+    if(_levels[_levels_current].type != type)
+    {
+        error("invalid level.");
+    }
+    return &_levels[_levels_current];
+}
+
 level_t *add_level(int type, uint16_t continue_label, uint16_t exit_label)
 {
     _levels_current++;
@@ -530,10 +539,59 @@ void parse_dim(int name_export)
 
 void parse_if()
 {
-    level_t * lvl = add_level(LEVEL_IF, add_label(), add_label());
+    level_t * lvl = add_level(LEVEL_IF, 0, add_label());
     scan();
     parse_jump_if_false(TYPE_INTEGER, get_label(lvl->exit_label));
     match(is_token(TOK_KEY_THEN), "'then'");
+}
+
+void parse_else()
+{
+    level_t * lvl = get_level(LEVEL_IF);
+    if(lvl->continue_label != 0)
+    {
+        error("duplicate 'else'");
+    }
+    scan();
+    lvl->continue_label = add_label();
+    gen_jump(get_label(lvl->continue_label));
+    set_label(lvl->exit_label, get_code_size());
+    lvl->exit_label = lvl->continue_label;
+}
+
+void parse_do()
+{
+    level_t * lvl = add_level(LEVEL_DO, add_label(), add_label());
+    scan();
+    set_label(lvl->continue_label, get_code_size());
+    if(is_token(TOK_KEY_WHILE))
+    {
+        scan();
+        parse_jump_if_false(TYPE_INTEGER, get_label(lvl->exit_label));
+    }
+    else if(is_token(TOK_KEY_UNTIL))
+    {
+        scan();
+        parse_jump_if_true(TYPE_INTEGER, get_label(lvl->exit_label));
+    }
+}
+
+void parse_loop()
+{
+    level_t * lvl = get_level(LEVEL_DO);
+    scan();
+    if(is_token(TOK_KEY_WHILE))
+    {
+        scan();
+        parse_jump_if_true(TYPE_INTEGER, get_label(lvl->continue_label));
+    }
+    else if(is_token(TOK_KEY_UNTIL))
+    {
+        scan();
+        parse_jump_if_false(TYPE_INTEGER, get_label(lvl->continue_label));
+    }
+    set_label(lvl->exit_label, get_code_size());
+    remove_level(LEVEL_DO);
 }
 
 void parse()
@@ -580,6 +638,18 @@ void parse()
         else if(is_token(TOK_KEY_IF))
         {
             parse_if();
+        }
+        else if(is_token(TOK_KEY_ELSE))
+        {
+            parse_else();
+        }
+        else if(is_token(TOK_KEY_DO))
+        {
+            parse_do();
+        }
+        else if(is_token(TOK_KEY_LOOP))
+        {
+            parse_loop();
         }
         else if(is_token(TOK_SYMBOL) && get_stage() == STAGE_CATALOG)
         {
