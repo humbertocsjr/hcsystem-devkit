@@ -1,14 +1,6 @@
-# HCSystem Development Kit
+# HCSystem Software Development Kit
 
 DevKit focused on retrocomputers.
-
-
-# Development Reqs
-
-- GNU Make
-- OpenWatcom 2.0
-- nasm (tests only)
-- dev86/bcc (tests only)
 
 # Targets
 
@@ -58,6 +50,13 @@ i86-as -o test0.o test0.s
 i86-as -o test1.o test1.s
 i86-ar -f libtest.a -a test0.o test1.o
 ```
+
+# Development Reqs
+
+- GNU Make
+- OpenWatcom 2.0
+- nasm (tests only)
+- dev86/bcc (tests only)
 
 # Versions History
 
