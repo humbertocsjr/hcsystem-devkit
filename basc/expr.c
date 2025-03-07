@@ -196,48 +196,76 @@ expr_t *optimize(type_t type, expr_t *e)
     if(e->right) e->right = optimize(type, e->right);
     if(e->left == 0 || e->right == 0) return e;
     if(e->left->tok == e->tok && e->left->right->tok == TOK_INTEGER && e->right->tok == TOK_INTEGER)
-    switch(e->tok)
     {
-        case TOK_ADD:
-            e->right->value = e->left->right->value + e->right->value;
-            e->left = e->left->left;
-            break;
-        default:
-            return e;
+        switch(e->tok)
+        {
+            case TOK_ADD:
+                e->right->value = e->left->right->value + e->right->value;
+                e->left = e->left->left;
+                break;
+            default:
+                return e;
+        }
     }
     if(e->left->tok == TOK_INTEGER && e->right->tok == TOK_INTEGER)
-    switch(e->tok)
     {
-        case TOK_ADD:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value + e->right->value;
-            break;
-        case TOK_SUB:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value - e->right->value;
-            break;
-        case TOK_MUL:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value * e->right->value;
-            break;
-        case TOK_DIV:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value / e->right->value;
-            break;
-        case TOK_KEY_MOD:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value % e->right->value;
-            break;
-        case TOK_KEY_SHL:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value << e->right->value;
-            break;
-        case TOK_KEY_SHR:
-            e->tok = TOK_INTEGER;
-            e->value = e->left->value >> e->right->value;
-            break;
-        default:
-            return e;
+        switch(e->tok)
+        {
+            case TOK_ADD:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value + e->right->value;
+                break;
+            case TOK_SUB:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value - e->right->value;
+                break;
+            case TOK_MUL:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value * e->right->value;
+                break;
+            case TOK_DIV:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value / e->right->value;
+                break;
+            case TOK_KEY_MOD:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value % e->right->value;
+                break;
+            case TOK_KEY_SHL:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value << e->right->value;
+                break;
+            case TOK_KEY_SHR:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value >> e->right->value;
+                break;
+            case TOK_EQ:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value == e->right->value ? 1 : 0;
+                break;
+            case TOK_NE:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value != e->right->value ? 1 : 0;
+                break;
+            case TOK_LT:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value < e->right->value ? 1 : 0;
+                break;
+            case TOK_LE:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value <= e->right->value ? 1 : 0;
+                break;
+            case TOK_GT:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value > e->right->value ? 1 : 0;
+                break;
+            case TOK_GE:
+                e->tok = TOK_INTEGER;
+                e->value = e->left->value >= e->right->value ? 1 : 0;
+                break;
+            default:
+                return e;
+        }
     }
     return e;
 }

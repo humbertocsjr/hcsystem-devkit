@@ -1,4 +1,5 @@
 #include "basc.h"
+#include <stdint.h>
 
 typedef struct level_t
 {
@@ -16,12 +17,43 @@ typedef struct level_t
 
 static level_t _levels[LEVELS_MAX];
 static int _levels_current = 0;
-static uint16_t _label = 1;
 static function_t *_function = 0;
+static int32_t _labels[LABELS_MAX];
+static uint16_t _labels_next = 0;
+static int _changed = 0;
+
+void set_changed()
+{
+    _changed = 1;
+}
+
+int get_changed()
+{
+    return _changed;
+}
+
+void reset_labels()
+{
+    _labels_next = 0;
+    _changed = 0;
+}
 
 uint16_t add_label()
 {
-    return _label++;
+    uint16_t lbl = _labels_next++;
+    if(_labels_next >= LABELS_MAX) error("labels list overflow.");
+    return lbl;
+}
+
+void set_label(uint16_t lbl, int32_t address)
+{
+    if(_labels[lbl] != address) _changed++;
+    _labels[lbl] = address;
+}
+
+int32_t get_label(uint16_t lbl)
+{
+    return _labels[lbl];
 }
 
 void remove_level(int type)
@@ -48,6 +80,11 @@ level_t *add_level(int type, uint16_t continue_label, uint16_t exit_label)
 
 void prepare_parser()
 {
+    int i;
+    for(i = 0; i < LABELS_MAX; i++)
+    {
+        _labels[i] = 0;
+    }
     _levels_current = 0;
     _levels[_levels_current].type = LEVEL_ROOT;
     _levels[_levels_current].continue_label = 0;
@@ -99,16 +136,26 @@ void parse_end()
     if(is_token(TOK_KEY_SUB))
     {
         scan();
+        set_label(_levels[_levels_current].exit_label, get_code_size());
         remove_level(LEVEL_SUB);
+        if(!_function) error("'end sub' without sub");
         gen_end_routine(_function->name, _function->type);
         _function = 0;
     }
     else if(is_token(TOK_KEY_FUNCTION))
     {
         scan();
+        set_label(_levels[_levels_current].exit_label, get_code_size());
         remove_level(LEVEL_FUNCTION);
+        if(!_function) error("'end function' without function");
         gen_end_routine(_function->name, _function->type);
         _function = 0;
+    }
+    else if(is_token(TOK_KEY_IF))
+    {
+        scan();
+        set_label(_levels[_levels_current].exit_label, get_code_size());
+        remove_level(LEVEL_IF);
     }
     else error("unknown 'end' type.");
 }
@@ -145,6 +192,7 @@ type_t get_type(expr_t *e)
 void parse_expr_write_node(type_t type, expr_t *e)
 {
     var_t *v;
+    if(!e) return;
     switch(e->tok)
     {
         case TOK_SYMBOL:
@@ -162,6 +210,7 @@ void parse_expr_write_node(type_t type, expr_t *e)
             }
             error_at(e->line, e->column, "variable expected.");
             break;
+        default: break;
     }
     error_at(e->line, e->column, "valid destination expected.");
 }
@@ -169,10 +218,18 @@ void parse_expr_write_node(type_t type, expr_t *e)
 void parse_expr_common_node(type_t type, expr_t *e)
 {
     extern void parse_expr_node(type_t type, expr_t *e);
-    parse_expr_node(type, e->right);
-    gen_push_acc(type);
-    parse_expr_node(type, e->left);
-    gen_pop_aux(type);
+    if(e->right->tok == TOK_INTEGER)
+    {
+        parse_expr_node(type, e->left);
+        gen_set_aux(e->right->value);
+    }
+    else
+    {
+        parse_expr_node(type, e->right);
+        gen_push_acc(type);
+        parse_expr_node(type, e->left);
+        gen_pop_aux(type);
+    }
 }
 
 void parse_expr_node(type_t type, expr_t *e)
@@ -254,6 +311,30 @@ void parse_expr_node(type_t type, expr_t *e)
             parse_expr_common_node(type, e);
             gen_shr(type);
             break;
+        case TOK_EQ:
+            parse_expr_common_node(type, e);
+            gen_set_acc_if_eq(type);
+            break;
+        case TOK_NE:
+            parse_expr_common_node(type, e);
+            gen_set_acc_if_ne(type);
+            break;
+        case TOK_LT:
+            parse_expr_common_node(type, e);
+            gen_set_acc_if_lt(type);
+            break;
+        case TOK_LE:
+            parse_expr_common_node(type, e);
+            gen_set_acc_if_le(type);
+            break;
+        case TOK_GT:
+            parse_expr_common_node(type, e);
+            gen_set_acc_if_gt(type);
+            break;
+        case TOK_GE:
+            parse_expr_common_node(type, e);
+            gen_set_acc_if_ge(type);
+            break;
         case TOK_ATTRIB:
             if(e->left->tok == TOK_SYMBOL && e->left->left == 0 && e->left->right == 0 && e->right->tok == TOK_INTEGER)
             {
@@ -277,17 +358,105 @@ void parse_expr_node(type_t type, expr_t *e)
                 parse_expr_write_node(get_type(e->left), e->left);
             }
             break;
+        default: break;
     }
 }
 
 void parse_expr(type_t type)
 {
-    expr_t *e = optimize(type, expr(type));
+    expr_t *e = expr(type);
     if(e->tok == TOK_EQ)
     {
         e->tok = TOK_ATTRIB;
     }
+    e = optimize(type, e);
     parse_expr_node(type, e);
+}
+
+void parse_jump_if_true(type_t type, int32_t address)
+{
+    expr_t *e = optimize(type, expr(type));
+    switch(e->tok)
+    {
+        case TOK_EQ:
+            parse_expr_common_node(type, e);
+            gen_jump_if_eq(type, address);
+            break;
+        case TOK_NE:
+            parse_expr_common_node(type, e);
+            gen_jump_if_ne(type, address);
+            break;
+        case TOK_LT:
+            parse_expr_common_node(type, e);
+            gen_jump_if_lt(type, address);
+            break;
+        case TOK_LE:
+            parse_expr_common_node(type, e);
+            gen_jump_if_le(type, address);
+            break;
+        case TOK_GT:
+            parse_expr_common_node(type, e);
+            gen_jump_if_gt(type, address);
+            break;
+        case TOK_GE:
+            parse_expr_common_node(type, e);
+            gen_jump_if_ge(type, address);
+            break;
+        default:
+            if(e->tok == TOK_INTEGER)
+            {
+                if(e->value) gen_jump(address);
+            }
+            else
+            {
+                parse_expr_node(type, e);
+                gen_jump_if_true(type, address);
+            }
+            break;
+    }
+}
+
+void parse_jump_if_false(type_t type, int32_t address)
+{
+    expr_t *e = optimize(type, expr(type));
+    switch(e->tok)
+    {
+        case TOK_EQ:
+            parse_expr_common_node(type, e);
+            gen_jump_if_ne(type, address);
+            break;
+        case TOK_NE:
+            parse_expr_common_node(type, e);
+            gen_jump_if_eq(type, address);
+            break;
+        case TOK_LT:
+            parse_expr_common_node(type, e);
+            gen_jump_if_ge(type, address);
+            break;
+        case TOK_LE:
+            parse_expr_common_node(type, e);
+            gen_jump_if_gt(type, address);
+            break;
+        case TOK_GT:
+            parse_expr_common_node(type, e);
+            gen_jump_if_le(type, address);
+            break;
+        case TOK_GE:
+            parse_expr_common_node(type, e);
+            gen_jump_if_lt(type, address);
+            break;
+        default:
+            if(e->tok == TOK_INTEGER)
+            {
+                if(!e->value) gen_jump(address);
+            }
+            else
+            {
+                parse_expr_node(type, e);
+                gen_jump_if_false(type, address);
+            }
+            break;
+    }
 }
 
 void parse_dim(int name_export)
@@ -359,6 +528,14 @@ void parse_dim(int name_export)
     } while(!is_token(TOK_NEW_LINE));
 }
 
+void parse_if()
+{
+    level_t * lvl = add_level(LEVEL_IF, add_label(), add_label());
+    scan();
+    parse_jump_if_false(TYPE_INTEGER, get_label(lvl->exit_label));
+    match(is_token(TOK_KEY_THEN), "'then'");
+}
+
 void parse()
 {
     int name_export = 0;
@@ -399,6 +576,10 @@ void parse()
         else if(is_token(TOK_KEY_END))
         {
             parse_end();
+        }
+        else if(is_token(TOK_KEY_IF))
+        {
+            parse_if();
         }
         else if(is_token(TOK_SYMBOL) && get_stage() == STAGE_CATALOG)
         {

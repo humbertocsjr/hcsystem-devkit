@@ -73,6 +73,12 @@ void gen_set_acc(int32_t value)
     out_word(STAGE_CODE_GEN, value & 0xffff);
 }
 
+void gen_set_aux(int32_t value)
+{
+    out_byte(STAGE_CODE_GEN, 0xbb); // mov bx, VALUE
+    out_word(STAGE_CODE_GEN, value & 0xffff);
+}
+
 void gen_store_local(char *name, int32_t offset)
 {
     if(INT8_MIN <= offset && offset <= INT8_MAX)
@@ -97,19 +103,12 @@ void gen_store_global(char *name, int32_t offset)
 
 void gen_store_local_direct(char *name, int32_t offset, int32_t value)
 {
-    if(INT8_MIN <= value && value <= INT8_MAX && INT8_MIN <= offset && offset <= INT8_MAX)
+    if(INT8_MIN <= offset && offset <= INT8_MAX)
     {
-        out_byte(STAGE_CODE_GEN, 0xc6); // mov byte [bp+OFFSET], VALUE
+        out_byte(STAGE_CODE_GEN, 0xc7); // mov [bp+OFFSET], VALUE
         out_byte(STAGE_CODE_GEN, 0x46);
-        out_byte(STAGE_CODE_GEN, offset & 0xffff);
-        out_byte(STAGE_CODE_GEN, value & 0xffff);
-    }
-    else if(INT8_MIN <= value && value <= INT8_MAX)
-    {
-        out_byte(STAGE_CODE_GEN, 0xc6); // mov byte [bp+OFFSET], VALUE
-        out_byte(STAGE_CODE_GEN, 0x86);
-        out_word(STAGE_CODE_GEN, offset & 0xffff);
-        out_byte(STAGE_CODE_GEN, value & 0xff);
+        out_byte(STAGE_CODE_GEN, offset & 0xff);
+        out_word(STAGE_CODE_GEN, value & 0xffff);
     }
     else
     {
@@ -122,20 +121,10 @@ void gen_store_local_direct(char *name, int32_t offset, int32_t value)
 
 void gen_store_global_direct(char *name, int32_t offset, int32_t value)
 {
-    if(INT8_MIN <= value && value <= INT8_MAX)
-    {
-        out_byte(STAGE_CODE_GEN, 0xc6); // mov byte [OFFSET], VALUE
-        out_byte(STAGE_CODE_GEN, 0x06);
-        out_word(STAGE_CODE_GEN, offset & 0xffff);
-        out_byte(STAGE_CODE_GEN, value & 0xff);
-    }
-    else
-    {
-        out_byte(STAGE_CODE_GEN, 0xc7); // mov word [OFFSET], VALUE
-        out_byte(STAGE_CODE_GEN, 0x06);
-        out_word(STAGE_CODE_GEN, offset & 0xffff);
-        out_word(STAGE_CODE_GEN, value & 0xffff);
-    }
+    out_byte(STAGE_CODE_GEN, 0xc7); // mov word [OFFSET], VALUE
+    out_byte(STAGE_CODE_GEN, 0x06);
+    out_word(STAGE_CODE_GEN, offset & 0xffff);
+    out_word(STAGE_CODE_GEN, value & 0xffff);
 }
 
 void gen_load_local(char *name, int32_t offset)
@@ -276,4 +265,230 @@ void gen_shr(type_t type)
     out_byte(STAGE_CODE_GEN, 0xe8);
 }
 
+
+void gen_set_acc_if_eq(type_t type)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    out_byte(STAGE_CODE_GEN, 0xb8); // mov ax, 1
+    out_word(STAGE_CODE_GEN, 0x0001);
+    out_byte(STAGE_CODE_GEN, 0x74); // je $+1
+    out_byte(STAGE_CODE_GEN, 0x01);
+    out_byte(STAGE_CODE_GEN, 0x48); // dec ax
+}
+
+void gen_set_acc_if_ne(type_t type)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    out_byte(STAGE_CODE_GEN, 0xb8); // mov ax, 1
+    out_word(STAGE_CODE_GEN, 0x0001);
+    out_byte(STAGE_CODE_GEN, 0x75); // jne $+1
+    out_byte(STAGE_CODE_GEN, 0x01);
+    out_byte(STAGE_CODE_GEN, 0x48); // dec ax
+}
+
+void gen_set_acc_if_lt(type_t type)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    out_byte(STAGE_CODE_GEN, 0xb8); // mov ax, 1
+    out_word(STAGE_CODE_GEN, 0x0001);
+    out_byte(STAGE_CODE_GEN, 0x7c); // jl $+1
+    out_byte(STAGE_CODE_GEN, 0x01);
+    out_byte(STAGE_CODE_GEN, 0x48); // dec ax
+}
+
+void gen_set_acc_if_le(type_t type)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    out_byte(STAGE_CODE_GEN, 0xb8); // mov ax, 1
+    out_word(STAGE_CODE_GEN, 0x0001);
+    out_byte(STAGE_CODE_GEN, 0x7e); // jle $+1
+    out_byte(STAGE_CODE_GEN, 0x01);
+    out_byte(STAGE_CODE_GEN, 0x48); // dec ax
+}
+
+void gen_set_acc_if_gt(type_t type)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    out_byte(STAGE_CODE_GEN, 0xb8); // mov ax, 1
+    out_word(STAGE_CODE_GEN, 0x0001);
+    out_byte(STAGE_CODE_GEN, 0x7f); // jg $+1
+    out_byte(STAGE_CODE_GEN, 0x01);
+    out_byte(STAGE_CODE_GEN, 0x48); // dec ax
+}
+
+void gen_set_acc_if_ge(type_t type)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    out_byte(STAGE_CODE_GEN, 0xb8); // mov ax, 1
+    out_word(STAGE_CODE_GEN, 0x0001);
+    out_byte(STAGE_CODE_GEN, 0x7d); // jge $+1
+    out_byte(STAGE_CODE_GEN, 0x01);
+    out_byte(STAGE_CODE_GEN, 0x48); // dec ax
+}
+
+void gen_jump(int32_t address)
+{
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0xeb); // jmp short ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_eq(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x74); // je ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x75); // jne $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_ne(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x75); // jne ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x74); // je $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_lt(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x7c); // jl ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x7d); // jge $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_le(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x7e); // jle ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x7f); // jg $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_gt(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x7f); // jg ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x7e); // jle $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_ge(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x39); // cmp ax, bx
+    out_byte(STAGE_CODE_GEN, 0xd8);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x7d); // jge ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x7c); // jl $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_true(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x83); // cmp ax, 0
+    out_byte(STAGE_CODE_GEN, 0xf8);
+    out_byte(STAGE_CODE_GEN, 0x00);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x74); // je ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x75); // jne $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
+
+void gen_jump_if_false(type_t type, int32_t address)
+{
+    out_byte(STAGE_CODE_GEN, 0x83); // cmp ax, 0
+    out_byte(STAGE_CODE_GEN, 0xf8);
+    out_byte(STAGE_CODE_GEN, 0x00);
+    if(INT8_MIN <= address && address <= INT8_MAX)
+    {
+        out_byte(STAGE_CODE_GEN, 0x75); // jne ADDRESS
+        out_byte(STAGE_CODE_GEN, address - get_code_size() - 1);
+    }
+    else
+    {
+        out_byte(STAGE_CODE_GEN, 0x74); // je $+3
+        out_byte(STAGE_CODE_GEN, 0x03);
+        out_byte(STAGE_CODE_GEN, 0xe9); // jmp near ADDRESS
+        out_word(STAGE_CODE_GEN, address - get_code_size() - 2);
+    }
+}
 

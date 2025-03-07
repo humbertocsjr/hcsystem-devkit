@@ -274,3 +274,4 @@ install: all
 
 token:
 	@nasm -f bin -o tests/token.bin tests/token.s
+	@ndisasm -b 16 tests/token.bin > tests/token.dis

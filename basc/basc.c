@@ -14,7 +14,7 @@ void usage(int retval)
 
 int main(int argc, char **argv)
 {
-    int c, i;
+    int c, i, changes;
     FILE *out;
     FILE *in;
     char *out_name = "a.out";
@@ -48,6 +48,16 @@ int main(int argc, char **argv)
     {
         process_source(argv[i]);
     }
+    do
+    {
+        set_stage(STAGE_COMPUTE);
+        for(i = optind; i < argc; i++)
+        {
+            process_source(argv[i]);
+        }
+        changes++;
+        if(changes > 20) error("code does not stabilize after multiple recompilations.");
+    } while (get_changed());
     set_stage(STAGE_CODE_GEN);
     for(i = optind; i < argc; i++)
     {

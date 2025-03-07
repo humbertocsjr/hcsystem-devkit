@@ -12,4 +12,5 @@ void set_stage(stage_t stage)
     _stage = stage;
     reset_out();
     reset_exprs();
+    reset_labels();
 }

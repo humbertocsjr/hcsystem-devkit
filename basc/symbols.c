@@ -17,6 +17,7 @@ function_t *add_function(int name_export, type_t type, char *name, int32_t offse
         {
             if(!strcmp(_functions[i].name, name))
             {
+                if(_functions[i].offset != offset) set_changed();
                 _functions[i].offset = offset;
                 return &_functions[i];
             }
@@ -45,6 +46,7 @@ var_t *add_global_var(int name_export, char *name, type_t type, uint16_t array_s
         {
             if(!strcmp(name, _globals[i].name))
             {
+                if(_globals[i].offset != offset) set_changed();
                 _globals[i].offset = offset;
                 return &_globals[i];
             }

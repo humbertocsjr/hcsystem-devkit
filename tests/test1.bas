@@ -3,17 +3,8 @@ dim texto as string = "oieeee"
 
 
 public sub main
-end sub
-
-public function soma() as integer
     dim a as integer
-end function
-
-public function subtracao() as integer
-    dim a as integer = 123
-    a = a / 1
-    a = a * 1
-    a = a mod 1
-    a = a shl 1
-    a = a shr 1
-end function
+    if a = 1 then
+        a = 2
+    end if
+end sub

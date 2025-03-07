@@ -10,10 +10,12 @@
 #define LEVELS_MAX 16
 #define FUNCTIONS_MAX 96
 #define LOCALS_MAX 128
+#define LABELS_MAX 512
 
 typedef enum stage_t
 {
     STAGE_CATALOG,
+    STAGE_COMPUTE,
     STAGE_CODE_GEN,
     STAGE_STRING_GEN,
     STAGE_DATA_GEN,
@@ -174,7 +176,9 @@ uint32_t out_byte(stage_t stage, uint8_t value);
 uint32_t out_word(stage_t stage, uint16_t value);
 
 // parser.c
-uint16_t add_label();
+void set_changed();
+int get_changed();
+void reset_labels();
 void prepare_parser();
 void parse();
 
@@ -198,6 +202,7 @@ int32_t get_integer_size();
 void gen_reserve_stack(int32_t size);
 void gen_release_stack(int32_t size);
 void gen_set_acc(int32_t value);
+void gen_set_aux(int32_t value);
 void gen_store_local(char *name, int32_t offset);
 void gen_store_global(char *name, int32_t offset);
 void gen_store_local_direct(char *name, int32_t offset, int32_t value);
@@ -219,5 +224,20 @@ void gen_div(type_t type);
 void gen_mod(type_t type);
 void gen_shl(type_t type);
 void gen_shr(type_t type);
+void gen_set_acc_if_eq(type_t type);
+void gen_set_acc_if_ne(type_t type);
+void gen_set_acc_if_lt(type_t type);
+void gen_set_acc_if_le(type_t type);
+void gen_set_acc_if_gt(type_t type);
+void gen_set_acc_if_ge(type_t type);
+void gen_jump(int32_t address);
+void gen_jump_if_eq(type_t type, int32_t address);
+void gen_jump_if_ne(type_t type, int32_t address);
+void gen_jump_if_lt(type_t type, int32_t address);
+void gen_jump_if_le(type_t type, int32_t address);
+void gen_jump_if_gt(type_t type, int32_t address);
+void gen_jump_if_ge(type_t type, int32_t address);
+void gen_jump_if_true(type_t type, int32_t address);
+void gen_jump_if_false(type_t type, int32_t address);
 
 #endif
