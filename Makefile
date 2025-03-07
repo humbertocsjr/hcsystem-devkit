@@ -23,7 +23,7 @@ all: bindos binwnt binlin bindbg binpsx $(BIN)
 	@make --no-print-directory -C examples all
 
 clean:
-	@rm -f $(BIN) *.o *.err  tests/*.com  tests/*.sys tests/*.small tests/*.tiny tests/*.hcix tests/*.o tests/*.dis *.zip
+	@rm -f $(BIN) *.o *.err  tests/*.com  tests/*.sys tests/*.small tests/*.tiny tests/*.hcix tests/*.o tests/*.dis *.zip *.img
 	@rm -Rf bindos bindbg binlin binpsx binwnt
 	@make --no-print-directory -C lib/libbasic clean
 
@@ -237,6 +237,18 @@ distro: all
 	@echo [ZIP] hcdk-lin.zip
 	@cd binlin; zip -q9 ../hcdk-lin.zip * 
 	@zip -q9 hcdk-lin.zip examples/*.bas examples/*.s examples/*.com lib/*
+	@dd if=/dev/zero of=hcsystem.img bs=1024 count=1440 status=none
+	@echo [IMG] hcsystem.img
+	@mformat -i hcsystem.img -f 1440
+	@mmd -i hcsystem.img ::/dos
+	@mmd -i hcsystem.img ::/win
+	@mmd -i hcsystem.img ::/lib
+	@mmd -i hcsystem.img ::/examples
+	@mcopy -i hcsystem.img bindos/*.* ::/dos/
+	@mcopy -i hcsystem.img binwnt/*.* ::/win/
+	@mcopy -i hcsystem.img lib/*.* ::/lib/
+	@mcopy -i hcsystem.img examples/*.* ::/examples/
+	@mcopy -i hcsystem.img license ::/license.txt
 
 install: all
 	@echo [INSTALL] /usr/local/bin

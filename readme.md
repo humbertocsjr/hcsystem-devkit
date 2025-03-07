@@ -88,6 +88,7 @@ i86-ld -f com -o test.com -L /libs/path/ -l libtest.a test2.o test3.o
         - [ ] Add cls command
 
 - [ ] 0.94-beta
+    - [ ] Add b2o tool (binary to object converter)
     - [ ] Add File support to BASIC Library
     - [ ] Add Mid command
     - [ ] Add Ucase command
