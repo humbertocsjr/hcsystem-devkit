@@ -2,17 +2,17 @@
 
 DevKit focused on retrocomputers.
 
-# Targets
+## Targets
 
 - i86: Intel 8088/8086 or Compatible
 
-# Supported Hosts
+## Supported Hosts
 
 - Linux x86
 - Windows x86
 - DOS 8086
 
-# Binary Formats
+## Binary Formats
 
 - v7: UNIX V7 a.out code and data in separated segments
 - v7tiny: UNIX V7 a.out with code and data in one segment
@@ -21,7 +21,7 @@ DevKit focused on retrocomputers.
 - sys: DOS SYS file
 - pcboot: PC Boot Sector
 
-# Tools:
+## Tools:
 
 - ar: Archiver
 - as: Assembler
@@ -30,7 +30,7 @@ DevKit focused on retrocomputers.
 - size: Object Size
 - basc: BASIC Compiler
 
-# Usage
+## Usage
 
 - Assemble source to DOS .COM
 ```sh
@@ -51,14 +51,14 @@ i86-as -o test1.o test1.s
 i86-ar -f libtest.a -a test0.o test1.o
 ```
 
-# Development Reqs
+## Development Reqs
 
 - GNU Make
 - OpenWatcom 2.0
 - nasm (tests only)
 - dev86/bcc (tests only)
 
-# Versions History
+## Versions History
 
 - [ ] 0.91
     - [x] Add UNIX NM-like Tool
