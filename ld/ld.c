@@ -104,7 +104,7 @@ void add_library(char *name)
 
 void usage(int retval)
 {
-    printf("HCSystem Development Kit\n");
+    printf("HCSystem Software Development Kit for %s\n", HOST);
     printf("HCSystem Linker v%d.%d-%s\n", VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
     printf("Usage: ld [-f format] [-b] [-o output] [-L dir] [-l library] [-s stack_size] [objects...]\n");

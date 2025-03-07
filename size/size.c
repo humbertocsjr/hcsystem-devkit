@@ -3,7 +3,7 @@
 
 void usage()
 {
-    printf("HCSystem Development Kit\n");
+    printf("HCSystem Software Development Kit for %s\n", HOST);
     printf("HCSystem Object Size v%d.%d-%s\n", VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
     printf("Usage: size [objects...]\n");
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
             usage();
         }
     }
-    printf("text\tdata\tbss\tdec\thex\tfilename\n");
+    printf("text\tdata\tbss\tdec\thex\tsyms\tfilename\n");
     for(i = 1; i < argc; i++)
     {
         if((file = fopen(argv[1], "rb")))
@@ -38,14 +38,16 @@ int main(int argc, char **argv)
             )
             printf
             (
-                "%d\t%d\t%d\t%d\t%x\t%s\n",
+                "%d\t%d\t%d\t%d\t%x\t%d\t%s\n",
                 aout.text,
                 aout.data,
                 aout.bss,
                 aout.text+aout.data+aout.bss,
                 aout.text+aout.data+aout.bss,
+                aout.syms,
                 argv[i]
             );
+            fclose(file);
         }
     }
     return 0;

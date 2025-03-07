@@ -27,6 +27,29 @@
       ]
     },
     {
+      "name": "i86-basc",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bindbg/i86-basc",
+      "args": [
+        "-o",
+        "tests/test1.o",
+        "tests/test1.bas"
+      ],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "MIMode": "gdb",
+      "preLaunchTask": "make i86-basc",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
       "name": "i86-as",
       "type": "cppdbg",
       "request": "launch",

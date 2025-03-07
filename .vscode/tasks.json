@@ -12,6 +12,11 @@
             "label": "make i86-ld",
             "type": "shell",
             "command": "make bindbg/i86-ld"
+        },
+        {
+            "label": "make i86-basc",
+            "type": "shell",
+            "command": "make bindbg/i86-basc"
         }
     ]
 }

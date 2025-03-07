@@ -2,12 +2,12 @@
 
 void usage(int retval)
 {
-    printf("HCSystem Development Kit\n");
+    printf("HCSystem Software Development Kit for %s\n", HOST);
     printf("HCSystem Archiver v%d.%d-%s\n", VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
-    printf("Usage: ar [-o output] [-a file] [-l]\n");
+    printf("Usage: ar [-f archive] [-a file] [-l]\n");
     printf("Options:\n");
-    printf(" -o output       set output file\n");
+    printf(" -f archive      set archive file\n");
     printf(" -a file         append file to archive\n");
     printf(" -l              list all files from archive\n");
     //printf(" -x file         extract file from archive\n");
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     FILE *in;
     char *out_name = "a.out";
     char *extract_name = 0;
-    char *add_name = 0;
+    int add_name = 0;
     int list = 0;
     char buffer[512];
     int len;
@@ -29,15 +29,16 @@ int main(int argc, char **argv)
     aout_t *aout_header = (aout_t *)buffer;
     size_t size;
     if(argc <= 1) usage(1);
-    while((c = getopt(argc, argv, "ho:a:l")) != -1)
+    while((c = getopt(argc, argv, "hf:o:al")) != -1)
     {
         switch(c)
         {
+            case 'f':
             case 'o':
                 out_name = optarg;
                 break;
             case 'a':
-                add_name = optarg;
+                add_name = 1;
                 break;
             case 'l':
                 list = 1;
@@ -56,27 +57,30 @@ int main(int argc, char **argv)
     if(add_name)
     {
         fseek(out, 0, SEEK_END);
-        in = fopen(add_name, "rb");
-        fseek(in, 0, SEEK_END);
-        size = ftell(in);
-        fseek(in, 0, SEEK_SET);
-        len = fread(buffer, 1, 512, in);
-        if(aout_header->signature == AOUT_HC_IX_OBJ)
+        for(i = optind; i < argc; i++)
         {
-            ar_header.signature = AR_AOUT;
-        }
-        else
-        {
-            ar_header.signature = AR_TEXT;
-        }
-        strlcpy(ar_header.name, add_name, 60);
-        ar_header.size = size;
-        fwrite(&ar_header, 1, sizeof(ar_t), out);
-        fwrite(buffer, 1, len, out);
-        while(len)
-        {
+            in = fopen(argv[i], "rb");
+            fseek(in, 0, SEEK_END);
+            size = ftell(in);
+            fseek(in, 0, SEEK_SET);
             len = fread(buffer, 1, 512, in);
-            fwrite(buffer, 1, 512, out);
+            if(aout_header->signature == AOUT_HC_IX_OBJ)
+            {
+                ar_header.signature = AR_AOUT;
+            }
+            else
+            {
+                ar_header.signature = AR_TEXT;
+            }
+            strlcpy(ar_header.name, argv[i], 60);
+            ar_header.size = size;
+            fwrite(&ar_header, 1, sizeof(ar_t), out);
+            fwrite(buffer, 1, len, out);
+            while(len)
+            {
+                len = fread(buffer, 1, 512, in);
+                if(len) fwrite(buffer, 1, len, out);
+            }
         }
     }
     if(list)

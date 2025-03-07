@@ -227,6 +227,21 @@ void parse()
         outpublic(add_symbol(SYM_GLOBAL, curr()->text, sym != 0 ? sym->value : 0));
         next();
     }
+    else if(is(curr(), "resb"))
+    {
+        next();
+        reserve(parse_expr(expr(), 0, 0));
+    }
+    else if(is(curr(), "resw"))
+    {
+        next();
+        reserve(parse_expr(expr(), 0, 0) * 2);
+    }
+    else if(is(curr(), "resw"))
+    {
+        next();
+        reserve(parse_expr(expr(), 0, 0) * 4);
+    }
     else if(is(curr(), "db"))
     {
         next();

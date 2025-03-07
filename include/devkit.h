@@ -14,7 +14,8 @@
 #define REVISION 91
 #define EDITION "beta"
 #define HOST_DOS "DOS"
-#define HOST_POSIX "POSIX Compliant"
+#define HOST_POSIX "POSIX"
+#define HOST_LINUX "Linux"
 #define HOST_WINDOWS "Windows"
 #ifndef HOST
     #define HOST "Unknown"

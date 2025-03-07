@@ -6,6 +6,7 @@ DevKit focused on retrocomputers.
 
 - GNU Make
 - OpenWatcom 2.0
+- nasm (tests only)
 - dev86/bcc (tests only)
 
 # Targets
@@ -26,6 +27,7 @@ DevKit focused on retrocomputers.
 - ar: Archiver
 - as: Assembler
 - ld: Linker
+- nm: Symbol Names
 - size: Object Size
 
 # Assembler

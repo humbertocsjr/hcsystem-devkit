@@ -30,7 +30,7 @@ void reset()
 
 void usage(int retval)
 {
-    printf("HCSystem Development Kit\n");
+    printf("HCSystem Software Development Kit for %s\n", HOST);
     printf("HCSystem %s Assembler v%d.%d-%s\n", get_target(), VERSION, REVISION, EDITION);
     printf("Copyright (c) 2025, Humberto Costa dos Santos Junior\n\n");
     printf("Usage: as [-o output] [objects...]\n");

@@ -12,3 +12,5 @@ tests/*.hcix
 tests/*.sys
 tests/*.small
 tests/*.tiny
+*.o
+*.a
