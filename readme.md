@@ -2,6 +2,7 @@
 
 DevKit focused on retrocomputers.
 
+
 # Development Reqs
 
 - GNU Make
@@ -12,6 +13,12 @@ DevKit focused on retrocomputers.
 # Targets
 
 - i86: Intel 8088/8086 or Compatible
+
+# Supported Hosts
+
+- Linux x86
+- Windows x86
+- DOS 8086
 
 # Binary Formats
 
@@ -30,6 +37,57 @@ DevKit focused on retrocomputers.
 - nm: Symbol Names
 - size: Object Size
 - basc: BASIC Compiler
+
+# Usage
+
+- Assemble source to DOS .COM
+```sh
+i86-as -o test.o test.s
+i86-ld -f dos -o test.com test.o
+```
+
+- Compile BASIC source to DOS .COM
+```sh
+i86-basc -o test.o test.bas
+i86-ld -f dos -o test.com -L /usr/local/lib/hcsystem -l libdos.a test.o
+```
+
+- Assemble multiple sources to Library
+```sh
+i86-as -o test0.o test0.s
+i86-as -o test1.o test1.s
+i86-ar -f libtest.a -a test0.o test1.o
+```
+
+# Versions History
+
+- [ ] 0.91
+    - [x] Add UNIX NM-like Tool
+    - [x] Add NASM dot labels to Assembler
+    - [ ] Add BASIC Compiler
+
+- [x] 0.90
+    - [x] Add PCBOOT File format
+    - [x] Add UNIX Size-like tool
+    - [x] Add Archiver tool
+
+- [x] 0.02
+    - [x] Add NASM TIMES command to Assembler
+    - [x] Add DOS COM/SYS File format
+
+- [x] 0.01
+    - [x] Add Linker tool
+    - [x] Add 8086 Assembler tool
+
+# Assembly Language
+
+Based on NASM language.
+
+# BASIC Language
+
+__IN DEVELOPMENT__
+
+Based on VB.NET language without classes.
 
 # i86-as: Assembler
 
