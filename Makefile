@@ -109,11 +109,11 @@ install: all
 	@install binpsx/i86-ld /usr/local/bin/i86-ld
 	@install binpsx/i86-nm /usr/local/bin/i86-nm
 	@install binpsx/i86-size /usr/local/bin/i86-size
-	@install binpsx/i86-basc /usr/local/bin/i86-basc
+	@install binpsx/i86-cc0 /usr/local/bin/i86-cc0
 	@echo [INSTALL] /usr/local/lib/hcsystem
 	@install -d /usr/local/lib/hcsystem
-	@install lib/libdos.a /usr/local/lib/hcsystem/libdos.a
-	@install lib/libhcsys.a /usr/local/lib/hcsystem/libhcsys.a
+	@install lib/libc-dos.a /usr/local/lib/hcsystem/libc-dos.a
+	@install lib/libc-hcs.a /usr/local/lib/hcsystem/libc-hcs.a
 
 token:
 	@nasm -f bin -o tests/token.bin tests/token.s
