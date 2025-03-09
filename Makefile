@@ -89,7 +89,11 @@ distro: all
 	@cd binlin; zip -q9 ../hcdk-lin.zip * 
 	@zip -q9 hcdk-lin.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@dd if=/dev/zero of=hcsystem.img bs=1024 count=1440 status=none
+	@echo [ZIP] hcdk-native.zip
+	@cd binpsx; zip -q9 ../hcdk-native.zip * 
+	@zip -q9 hcdk-native.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@echo [IMG] hcsystem.img
+	@dd if=/dev/zero of=hcsystem.img bs=1024 count=1440 status=none
 	@mformat -i hcsystem.img -f 1440
 	@mmd -i hcsystem.img ::/dos
 	@mmd -i hcsystem.img ::/win
