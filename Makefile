@@ -1,31 +1,26 @@
-WATCOM = /usr/bin/watcom/
-LDSRC = include/devkit.h $(wildcard ld/*.h) $(wildcard ld/*.c)
-LD86SRC = $(LDSRC) ld/target/i86.c
-LD86 = i86-ld
-ASSRC = include/devkit.h $(wildcard as/*.h) $(wildcard as/*.c)
-AS86SRC = $(ASSRC) as/target/i86.c
-AS86 = i86-as
-ARSRC = include/devkit.h $(wildcard ar/*.h) $(wildcard ar/*.c)
-AR86SRC = $(ARSRC)
-AR86 = i86-ar
-NMSRC = include/devkit.h $(wildcard nm/*.h) $(wildcard nm/*.c)
-NM86SRC = $(NMSRC)
-NM86 = i86-nm
-BASCSRC = include/devkit.h $(wildcard basc/*.h) $(wildcard basc/*.c)
-BASC86SRC = $(BASCSRC) basc/target/i86.c
-BASC86 = i86-basc
-SIZE86SRC = include/devkit.h size/size.c
-SIZE86 = i86-size
-BIN = binlin/i86-ld binpsx/i86-ld bindbg/i86-ld bindos/i86-ld.exe binwnt/i86-ld.exe binlin/i86-as binpsx/i86-as bindbg/i86-as bindos/i86-as.exe binwnt/i86-as.exe binlin/i86-size binpsx/i86-size bindbg/i86-size bindos/i86-size.exe binwnt/i86-size.exe binlin/i86-ar binpsx/i86-ar bindbg/i86-ar bindos/i86-ar.exe binwnt/i86-ar.exe binlin/i86-basc binpsx/i86-basc bindbg/i86-basc bindos/i86-basc.exe binwnt/i86-basc.exe binlin/i86-nm binpsx/i86-nm bindbg/i86-nm bindos/i86-nm.exe binwnt/i86-nm.exe binlin/license bindos/license.txt binwnt/license.txt
+MAKE = make --no-print-directory -C 
 
-all: bindos binwnt binlin bindbg binpsx $(BIN)
-	@make --no-print-directory -C lib/libbasic all
-	@make --no-print-directory -C examples all
+all: bindos binwnt binlin bindbg binpsx 
+	@$(MAKE) ar $@
+	@$(MAKE) as $@
+	@$(MAKE) cc0 $@
+	@$(MAKE) nm $@
+	@$(MAKE) size $@
+	@$(MAKE) ld $@
+	@$(MAKE) lib/libc $@
+	@$(MAKE) examples $@
 
 clean:
-	@rm -f $(BIN) *.o *.err  tests/*.com  tests/*.sys tests/*.small tests/*.tiny tests/*.hcix tests/*.o tests/*.dis *.zip *.img
+	@$(MAKE) ar $@
+	@$(MAKE) as $@
+	@$(MAKE) cc0 $@
+	@$(MAKE) nm $@
+	@$(MAKE) size $@
+	@$(MAKE) ld $@
+	@$(MAKE) lib/libc $@
+	@$(MAKE) examples $@
+	@rm -f $(BIN) *.zip *.img tests/*.dis  tests/*.o  tests/*.hcix  tests/*.com  tests/*.tiny  tests/*.small tests/*.bin tests/*.sys
 	@rm -Rf bindos bindbg binlin binpsx binwnt
-	@make --no-print-directory -C lib/libbasic clean
 
 bindos:
 	@mkdir -p bindos
@@ -42,166 +37,21 @@ bindbg:
 binpsx:
 	@mkdir -p binpsx
 
-binlin/i86-ld: $(LD86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -d2 -zq -aa -za99 -l=386 -bt=linux  -bcl=linux -dHOST=HOST_LINUX -cc -i=$(WATCOM)/lh -fe=$@ $^
-	@rm -f *.o codegen/*.o
 
-bindbg/i86-ld: $(LD86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -g -o $@ $^
+test-cc-linux: all
+	rm -f tests/test2.s
+	binlin/i86-cc0 -o tests/test2.s tests/test2.c
+	binlin/i86-as -o tests/test2.o tests/test2.s
+	binlin/i86-size tests/test2.o
+	binlin/i86-nm tests/test2.o
+	ndisasm -b 16 -e 0x10 -o 0 tests/test2.o > tests/test2.o.dis
 
-binpsx/i86-ld: $(LD86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -o $@ $^
-
-bindos/i86-ld.exe: $(LD86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o target/*.o
-
-binwnt/i86-ld.exe: $(LD86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-binlin/i86-as: $(AS86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=linux -dHOST=HOST_LINUX -cc -i=$(WATCOM)/lh -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-bindbg/i86-as: $(AS86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -g -o $@ $^
-
-binpsx/i86-as: $(AS86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX -o $@ $^
-
-bindos/i86-as.exe: $(AS86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o target/*.o
-
-binwnt/i86-as.exe: $(AS86SRC)
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-binlin/i86-size: $(SIZE86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=linux -dHOST=HOST_LINUX -cc -i=$(WATCOM)/lh -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-bindbg/i86-size: $(SIZE86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -g -o $@ $^
-
-binpsx/i86-size: $(SIZE86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX -o $@ $^
-
-bindos/i86-size.exe: $(SIZE86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o target/*.o
-
-binwnt/i86-size.exe: $(SIZE86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-binlin/i86-ar: $(AR86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=linux -dHOST=HOST_LINUX -cc -i=$(WATCOM)/lh -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-bindbg/i86-ar: $(AR86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -g -o $@ $^
-
-binpsx/i86-ar: $(AR86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX -o $@ $^
-
-bindos/i86-ar.exe: $(AR86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o target/*.o
-
-binwnt/i86-ar.exe: $(AR86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-binlin/i86-basc: $(BASC86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=linux -dHOST=HOST_LINUX -cc -i=$(WATCOM)/lh -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-bindbg/i86-basc: $(BASC86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -g -o $@ $^
-
-binpsx/i86-basc: $(BASC86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX -o $@ $^
-
-bindos/i86-basc.exe: $(BASC86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o target/*.o
-
-binwnt/i86-basc.exe: $(BASC86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-binlin/i86-nm: $(NM86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=linux -dHOST=HOST_LINUX -cc -i=$(WATCOM)/lh -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-bindbg/i86-nm: $(NM86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX  -g -o $@ $^
-
-binpsx/i86-nm: $(NM86SRC)
-	@echo [CC] $@
-	@cc -DHOST=HOST_POSIX -o $@ $^
-
-bindos/i86-nm.exe: $(NM86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl -zq -bcl=dos -dHOST=HOST_DOS -bc -lr -cc -0 -fpi -ms -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o target/*.o
-
-binwnt/i86-nm.exe: $(NM86SRC)
-	@echo [CC] $@
-	@WATCOM=$(WATCOM) wcl386 -zq -bcl=nt -dHOST=HOST_WINDOWS -bc -cc -3 -i=$(WATCOM)/h  -fe=$@ $^
-	@rm -f *.o codegen/*.o
-
-binlin/license: license
-	@echo [CP] $@
-	@cp $< $@
-
-bindos/license.txt: license
-	@echo [CP] $@
-	@cp $< $@
-
-binwnt/license.txt: license
-	@echo [CP] $@
-	@cp $< $@
-
-test-bas-linux: all
-	binlin/i86-basc -o tests/test1.o tests/test1.bas
-	binlin/i86-size tests/test1.o
-	binlin/i86-nm tests/test1.o
-	ndisasm -b 16 -e 0x10 -o 0 tests/test1.o > tests/test1.o.dis
-
-test-bas-dos: all
-	emu2 bindos/i86-basc.exe -o tests/test1.o tests/test1.bas
-	emu2 bindos/i86-size.exe tests/test1.o
-	emu2 bindos/i86-nm.exe tests/test1.o
-	ndisasm -b 16 -e 0x10 -o 0 tests/test1.o > tests/test1.o.dis
+test-cc-dos: all
+	rm -f tests/test2.s
+	emu2 bindos/i86-cc0.exe -o tests/test2.o tests/test2.c
+	emu2 bindos/i86-size.exe tests/test2.o
+	emu2 bindos/i86-nm.exe tests/test2.o
+	ndisasm -b 16 -e 0x10 -o 0 tests/test2.o > tests/test2.o.dis
 
 test-linux: all
 	binlin/i86-as -o tests/test0.o tests/test0.s
@@ -230,13 +80,13 @@ distro: all
 	@rm -f hcdk-*.zip
 	@echo [ZIP] hcdk-dos.zip
 	@cd bindos; zip -q9 ../hcdk-dos.zip * 
-	@zip -q9 hcdk-dos.zip examples/*.bas examples/*.s examples/*.com lib/*
+	@zip -q9 hcdk-dos.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@echo [ZIP] hcdk-win.zip
 	@cd binwnt; zip -q9 ../hcdk-win.zip * 
-	@zip -q9 hcdk-win.zip examples/*.bas examples/*.s examples/*.com lib/*
+	@zip -q9 hcdk-win.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@echo [ZIP] hcdk-lin.zip
 	@cd binlin; zip -q9 ../hcdk-lin.zip * 
-	@zip -q9 hcdk-lin.zip examples/*.bas examples/*.s examples/*.com lib/*
+	@zip -q9 hcdk-lin.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@dd if=/dev/zero of=hcsystem.img bs=1024 count=1440 status=none
 	@echo [IMG] hcsystem.img
 	@mformat -i hcsystem.img -f 1440

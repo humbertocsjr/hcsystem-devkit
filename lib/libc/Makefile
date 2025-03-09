@@ -1,7 +1,7 @@
 AR = ../../binpsx/i86-ar
 AS = ../../binpsx/i86-as
 LD = ../../binpsx/i86-ld
-OUT = ../libdos.a ../libhcsys.a
+OUT = ../libc-dos.a ../libc-hcs.a
 SRCDOS = $(wildcard dos/*.s) $(wildcard *.s)
 OBJDOS = $(patsubst %.s,%.o,$(SRCDOS))
 SRCHCSYS = $(wildcard dos/*.s) $(wildcard *.s)
@@ -16,10 +16,10 @@ clean:
 	@echo [AS] $@
 	@$(AS) -o $@ $<
 
-../libdos.a: $(OBJDOS)
+../libc-dos.a: $(OBJDOS)
 	@echo [AR] $@
 	@$(AR) -f $@ -a $^
 
-../libhcsys.a: $(OBJHCSYS)
+../libc-hcs.a: $(OBJHCSYS)
 	@echo [AR] $@
 	@$(AR) -f $@ -a $^

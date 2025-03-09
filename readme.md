@@ -28,7 +28,7 @@ DevKit focused on retrocomputers.
 - ld: Linker
 - nm: Symbol Names
 - size: Object Size
-- basc: BASIC Compiler
+- cc0: C Compiler
 
 ## Usage
 
@@ -38,9 +38,10 @@ i86-as -o test.o test.s
 i86-ld -f com -o test.com test.o
 ```
 
-- Compile BASIC source to DOS .COM [DON'T USE. IN DEVELOPMENT]
+- Compile C source to DOS .COM [DON'T USE. IN DEVELOPMENT]
 ```sh
-i86-basc -o test.o test.bas
+i86-cc0 -o test.s test.c
+i86-as -o test.o test.s
 i86-ld -f com -o test.com -L /usr/local/lib/hcsystem -l libdos.a test.o
 ```
 
@@ -73,50 +74,20 @@ i86-ld -f com -o test.com -L /libs/path/ -l libtest.a test2.o test3.o
     - [ ] Add Assembly Macro Processor
 
 - [ ] 1.00-final
-    - [ ] Add Peek/Poke/Memory Copy to BASIC
-
-- [ ] 0.96-beta
-    - [ ] Add Serial port support
-    - [ ] Add Printer port support
-
-- [ ] 0.95-beta
-    - [ ] Add full console support
-        - [ ] Add locale command
-        - [ ] Add input command
-        - [ ] Add line input command
-        - [ ] Add inkey command
-        - [ ] Add cls command
+    - [ ] Add Far pointer
 
 - [ ] 0.94-beta
     - [ ] Add b2o tool (binary to object converter)
-    - [ ] Add File support to BASIC Library
-    - [ ] Add Mid command
-    - [ ] Add Ucase command
-    - [ ] Add Lcase command
 
 - [ ] 0.93-beta
-    - [ ] Add Full Strings support to BASIC Compiler
-        - [ ] Add Chr/Asc inline commands
-        - [ ] Add &(concatenate) symbol
-        - [ ] Add String Equal support
     - [ ] Add Minimal DOS Library
         - [ ] Add _start routine
-        - [ ] Add Print command
-        - [ ] Add String Equal
-        - [ ] Add String Allocation
-        - [ ] Add String Concat
-        - [ ] Add String Len
+    - [ ] Add C Pre-processor
 
 - [ ] 0.92-beta
-    - [ ] Add For command to BASIC
-    - [ ] Add Declare command to BASIC
-    - [ ] Add Return command to BASIC
-    - [ ] Add Exit command to BASIC
-    - [ ] Add Continue command to BASIC
-    - [ ] Add Sub/Functions Arguments support to BASIC
+    - [x] Add C Compiler minimal prototype
 
 - [x] 0.91-beta
-    - [x] Add BASIC Compiler minimal prototype
     - [x] Add missing opcodes to Assembler (eg.: cmp REG16, VALUE)
     - [x] Add UNIX NM-like Tool
     - [x] Add NASM dot labels to Assembler
@@ -172,85 +143,11 @@ Based on NASM language.
     times 5 db 5
     ```
 
-# BASIC Language
+# C Language
 
-__IN DEVELOPMENT__
-
-Based on VB.NET language without classes.
-
-- [X] Basic Math 
-    ```vb
-    a  = 1 * 4 + a / 2 mod 5 shl 1 shr 4
-    ```
-- [X] public / private dim
-    ```vb
-    public dim a as integer
-    private dim b as integer
-    dim c as integer
-    ```
-- [X] public / private function
-    ```vb
-    public function main() as integer
-    end function
-
-    private function hi() as integer
-    end function
-    
-    function test() as integer
-    end function
-    ```
-- [X] public / private sub
-    ```vb
-    public sub hello()
-    end sub
-    
-    private sub hi()
-    end sub
-
-    sub test()
-    end sub
-    ```
-- [X] if then else
-    ```vb
-    if a = 1 then
-    else
-    end if
-    ```
-- [X] do / loop / do while / do until / loop while / loop until
-    ```vb
-    do
-    loop
-
-    do while a < 1
-    loop
-
-    do until a < 1
-    loop
-
-    do
-    loop while a > 2
-
-    do
-    loop until a > 2
-
-    do until a < 10
-    loop while a > 2
-    ```
-- [ ] for to step next
-    ```vb
-    for a = 1 to 4 step 2
-    next
-    ```
-- [ ] string operations
-    ```vb
-    str = "hello"
-    str = str & " world"
-    ```
-- [ ] string comparison
-    ```vb
-    if str = "" then
-    end if
-    ```
+- [x] global variables
+- [x] do/while/for loops
+- [x] pointers
 
 # i86-as: Assembler
 
@@ -322,14 +219,14 @@ Copyright (c) 2025, Humberto Costa dos Santos Junior
 
 Usage: nm [objects...]
 ```
-# i86-basc: BASIC Compiler
+# i86-cc0: C Compiler
 
 ```
 HCSystem Software Development Kit for POSIX
-HCSystem BASIC Compiler v0.91-beta
+HCSystem C Compiler v0.91-beta
 Copyright (c) 2025, Humberto Costa dos Santos Junior
 
-Usage: basc [-o output] [sources]
+Usage: cc0 [-o output] [sources]
 Options:
  -o output       set output file
 ```

@@ -17,7 +17,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "MIMode": "gdb",
-      "preLaunchTask": "make i86-ld",
+      "preLaunchTask": "make all",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
@@ -40,7 +40,30 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "MIMode": "gdb",
-      "preLaunchTask": "make i86-basc",
+      "preLaunchTask": "make all",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "i86-cc0",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bindbg/i86-cc0",
+      "args": [
+        "-o",
+        "tests/test2.s",
+        "tests/test2.c"
+      ],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "MIMode": "gdb",
+      "preLaunchTask": "make all",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
@@ -63,7 +86,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "MIMode": "gdb",
-      "preLaunchTask": "make i86-as",
+      "preLaunchTask": "make all",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",

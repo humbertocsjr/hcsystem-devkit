@@ -59,7 +59,7 @@ int is_register(expr_t *e)
     if(is(e, "bx")) return REG_BX;
     if(is(e, "cx")) return REG_CX;
     if(is(e, "dx")) return REG_DX;
-    if(is(e, "so")) return REG_SP;
+    if(is(e, "sp")) return REG_SP;
     if(is(e, "bp")) return REG_BP;
     if(is(e, "si")) return REG_SI;
     if(is(e, "di")) return REG_DI;

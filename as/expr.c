@@ -3,7 +3,21 @@
 expr_t *expr_value()
 {
     expr_t *e = 0;
-    if(is_token(curr(), TOKEN_INTEGER))
+    if(is_token(curr(), TOKEN_SUB))
+    {
+        e = clone(curr());
+        e->left = clone(curr());
+        e->left->token = TOKEN_INTEGER;
+        e->left->value = 0;
+        next();
+        e->right = expr();
+    }
+    else if(is_token(curr(), TOKEN_ADD))
+    {
+        next();
+        e = expr();
+    }
+    else if(is_token(curr(), TOKEN_INTEGER))
     {
         e = clone(curr());
         next();

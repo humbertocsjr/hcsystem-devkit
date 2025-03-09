@@ -15,3 +15,5 @@ tests/*.tiny
 *.o
 *.a
 *.img
+*.lnk
+config.mk
