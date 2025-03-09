@@ -11,7 +11,7 @@
 #include <ctype.h>
 
 #define VERSION 0
-#define REVISION 91
+#define REVISION 92
 #define EDITION "beta"
 #define HOST_DOS "DOS"
 #define HOST_POSIX "POSIX"
