@@ -10,6 +10,9 @@ all: $(OUT)
 clean:
 	@rm -f $(OUT) *.o
 
+native: ../binpsx/i86-cc0
+	@echo >> /dev/null
+
 ../binpsx/i86-%: $(SRC) $(HDR) $(I86) Makefile
 	@echo [CC] ${@F} [POSIX]
 	@cc -o $@ $(SRC) $(I86)

@@ -7,8 +7,9 @@ OBJDOS = $(patsubst %.s,%.o,$(SRCDOS))
 SRCHCSYS = $(wildcard dos/*.s) $(wildcard *.s)
 OBJHCSYS = $(patsubst %.s,%.o,$(SRCHCSYS))
 
-all: $(OUT)
+native all: $(OUT)
 	@echo >> /dev/null
+	
 clean:
 	@rm -f $(OUT) *.o dos/*.o hcsystem/*.o
 

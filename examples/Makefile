@@ -1,6 +1,6 @@
 OUT = echo.com
 
-all: $(OUT)
+all native: $(OUT)
 	@echo >> /dev/null
 
 clean:

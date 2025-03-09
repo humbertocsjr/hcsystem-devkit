@@ -1,6 +1,6 @@
 MAKE = make --no-print-directory -C 
 
-all: bindos binwnt binlin bindbg binpsx 
+all native: bindos binwnt binlin bindbg binpsx 
 	@$(MAKE) ar $@
 	@$(MAKE) as $@
 	@$(MAKE) cc0 $@
@@ -77,6 +77,12 @@ test-dos: all
 	ndisasm -b 16 -o 0x100 tests/test0.com > tests/test0.com.dis
 	ndisasm -b 16 -e 0x10 -o 0 tests/test0.hcix > tests/test0.hcix.dis
 
+distro-native: native
+	@echo [ZIP] hcdk-native.zip
+	@cd binpsx; zip -q9 ../hcdk-native.zip * 
+	@zip -q9 hcdk-native.zip examples/*.bas examples/*.s examples/*.com lib/* license
+	
+
 distro: all
 	@rm -f hcdk-*.zip
 	@echo [ZIP] hcdk-dos.zip
@@ -89,9 +95,6 @@ distro: all
 	@cd binlin; zip -q9 ../hcdk-lin.zip * 
 	@zip -q9 hcdk-lin.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@dd if=/dev/zero of=hcsystem.img bs=1024 count=1440 status=none
-	@echo [ZIP] hcdk-native.zip
-	@cd binpsx; zip -q9 ../hcdk-native.zip * 
-	@zip -q9 hcdk-native.zip examples/*.bas examples/*.s examples/*.com lib/* license
 	@echo [IMG] hcsystem.img
 	@dd if=/dev/zero of=hcsystem.img bs=1024 count=1440 status=none
 	@mformat -i hcsystem.img -f 1440

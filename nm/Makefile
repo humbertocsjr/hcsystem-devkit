@@ -7,6 +7,9 @@ I86 =
 all: $(OUT)
 	@echo >> /dev/null
 
+native: ../binpsx/i86-nm
+	@echo >> /dev/null
+
 clean:
 	@rm -f $(OUT) *.o
 

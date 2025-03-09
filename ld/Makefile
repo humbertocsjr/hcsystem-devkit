@@ -7,6 +7,9 @@ I86 = target/i86.c
 all: $(OUT)
 	@echo >> /dev/null
 
+native: ../binpsx/i86-ld
+	@echo >> /dev/null
+
 clean:
 	@rm -f $(OUT) *.o
 
