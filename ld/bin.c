@@ -48,8 +48,8 @@ void output_bin(int stack_size, int include_bss, int32_t bin_offset)
     add_value("__edata", get_value("__etext"));
     add_value("__end", get_value("__edata"));
     text_start = bin_offset + 3;
-    data_start = get_value("__etext");
-    bss_start = get_value("__edata");
+    data_start = bin_offset + get_value("__etext");
+    bss_start = bin_offset + get_value("__edata");
     fputc(get_bin_jump(), _out);
     fputc(0x00, _out);
     fputc(0x00, _out);

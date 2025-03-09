@@ -1,6 +1,11 @@
 unsigned b = 123, z;
 unsigned *c;
 
+void start()
+{
+
+}
+
 int main()
 {
     int y, f;
@@ -8,6 +13,6 @@ int main()
     b = *c;
     for(b = 1; b < 24; b = b + 1)
     {
-        z = 23;
+        z = 23 + y;
     }
 }

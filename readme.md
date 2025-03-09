@@ -84,8 +84,9 @@ i86-ld -f com -o test.com -L /libs/path/ -l libtest.a test2.o test3.o
         - [ ] Add _start routine
     - [ ] Add C Pre-processor
 
-- [ ] 0.92-beta
+- [x] 0.92-beta
     - [x] Add C Compiler minimal prototype
+    - [x] Fix AS/LD Binary output offset
 
 - [x] 0.91-beta
     - [x] Add missing opcodes to Assembler (eg.: cmp REG16, VALUE)

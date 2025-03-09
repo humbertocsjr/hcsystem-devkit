@@ -30,6 +30,7 @@ symbol_t *add_symbol(int sym, char *name, int32_t value)
         if(_symbols[i].sym != SYM_EMPTY && !strcmp(_symbols[i].name, name))
         {
             _symbols[i].value = value;
+            _symbols[i].seg = get_segment();
             return &_symbols[i];
         }
     }
@@ -40,6 +41,7 @@ symbol_t *add_symbol(int sym, char *name, int32_t value)
             _symbols[i].sym = sym;
             _symbols[i].name = add_name(name);
             _symbols[i].value = value;
+            _symbols[i].seg = get_segment();
             if(root_name) _last_root_symbol = &_symbols[i];
             inc_changes();
             return &_symbols[i];
@@ -64,6 +66,7 @@ void set_symbol(char *name, int32_t value)
         {
             if(_symbols[i].value != value) inc_changes();
             _symbols[i].value = value;
+            _symbols[i].seg = get_segment();
             return;
         }
     }

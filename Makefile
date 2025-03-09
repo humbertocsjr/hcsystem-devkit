@@ -42,9 +42,10 @@ test-cc-linux: all
 	rm -f tests/test2.s
 	binlin/i86-cc0 -o tests/test2.s tests/test2.c
 	binlin/i86-as -o tests/test2.o tests/test2.s
+	binlin/i86-ld -f com -o tests/test2.com tests/test2.o
 	binlin/i86-size tests/test2.o
 	binlin/i86-nm tests/test2.o
-	ndisasm -b 16 -e 0x10 -o 0 tests/test2.o > tests/test2.o.dis
+	ndisasm -b 16 -o 0x100 tests/test2.com > tests/test2.dis
 
 test-cc-dos: all
 	rm -f tests/test2.s

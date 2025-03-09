@@ -11,6 +11,14 @@ section .bss
 _c:
 resb 2
 section .text
+global _start
+_start:
+push bp
+mov bp, sp
+mov sp, bp
+pop bp
+ret
+global _main
 _main:
 push bp
 mov bp, sp
@@ -33,7 +41,9 @@ or ax, ax
 je L8
 jmp L5
 L8:
-mov word [_z], 23
+mov ax, [bp+-2] ; y
+add ax, 23
+mov [_z], ax
 mov ax, [_b]
 add ax, 1
 mov [_b], ax

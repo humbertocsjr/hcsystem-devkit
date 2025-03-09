@@ -48,6 +48,11 @@ dtype_t parse_dtype()
         scan();
         return DTYPE_INT | DTYPE_SIGNED;
     }
+    if(is_token(TOK_KEY_VOID))
+    {
+        scan();
+        return DTYPE_VOID;
+    }
     match(0, "data type");
     return DTYPE_UNKNOWN;
 }
@@ -151,7 +156,12 @@ void parse_expr(dtype_t dt, expr_t *e)
             }
             break;
         case TOK_SYMBOL:
-            if((v = find_global_var(e->text)))
+            if((v = find_local_var(_function, e->text)))
+            {
+                gen_load_local(v->type, v->name, v->offset);
+                cast_dtype(v->type, dt);
+            }
+            else if((v = find_global_var(e->text)))
             {
                 gen_load_global(v->type, v->name);
                 cast_dtype(v->type, dt);
@@ -330,7 +340,7 @@ int parse_root_declaration(int is_static)
                 {
                     _function = add_function(!is_static, dt, name);
                 }
-                gen_function(name);
+                gen_function(name, !is_static);
                 if(_function->vars_next) gen_reserve_stack(-_function->vars_next);
                 parse();
                 gen_end_function(name);

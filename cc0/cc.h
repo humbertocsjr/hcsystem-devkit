@@ -207,7 +207,7 @@ int get_args_offset();
 int get_vars_offset();
 void gen_store_global(dtype_t dt, char *name);
 void gen_store_global_direct(dtype_t dt, char *name, int value);
-void gen_function(char *name);
+void gen_function(char *name, int is_public);
 void gen_end_function(char *name);
 void gen_push_acc();
 void gen_push_aux();
@@ -246,5 +246,6 @@ void gen_goto_label(char *name);
 void gen_goto(char *name);
 void gen_reserve_stack(int size);
 void gen_restore_stack(int size);
+void gen_load_local(dtype_t dt, char *name, int offset);
 
 #endif

@@ -2,5 +2,11 @@
 section .text
 global _start
 _start:
-	add	sp,-2
-	mov	ax,[bp+4]
+	mov ax, [_var]
+	mov ax, [_var2]
+section .data
+_var:
+	dw 0
+_var2:
+	dw 0
+nop

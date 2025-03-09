@@ -40,6 +40,11 @@ void set_segment(segment_t seg)
     _seg = seg;
 }
 
+segment_t get_segment()
+{
+    return _seg;
+}
+
 void reserve(int size)
 {
 
@@ -119,16 +124,25 @@ void outreflocal(symbol_t *sym, int32_t pointer, int32_t offset)
     if(_seg == SEGMENT_TEXT)
     {
         aout_sym.type |= AOUT_SYMTYPE_TEXTSEG;
+    }
+    if(sym->seg == SEGMENT_TEXT)
+    {
         strncpy(aout_sym.symbol, "__textoff", 60);
     }
     if(_seg == SEGMENT_DATA)
     {
         aout_sym.type |= AOUT_SYMTYPE_DATASEG;
+    }
+    if(sym->seg == SEGMENT_DATA)
+    {
         strncpy(aout_sym.symbol, "__dataoff", 60);
     }
     if(_seg == SEGMENT_BSS)
     {
         aout_sym.type |= AOUT_SYMTYPE_BSSSEG;
+    }
+    if(sym->seg == SEGMENT_BSS)
+    {
         strncpy(aout_sym.symbol, "__bssoff", 60);
     }
     aout_sym.type |= offset & AOUT_MASK_OFFSET;
@@ -145,16 +159,25 @@ void outdispreflocal(symbol_t *sym, int32_t pointer, int32_t offset, int size)
     if(_seg == SEGMENT_TEXT)
     {
         aout_sym.type |= AOUT_SYMTYPE_TEXTSEG;
+    }
+    if(sym->seg == SEGMENT_TEXT)
+    {
         strncpy(aout_sym.symbol, "__textoff", 60);
     }
     if(_seg == SEGMENT_DATA)
     {
         aout_sym.type |= AOUT_SYMTYPE_DATASEG;
+    }
+    if(sym->seg == SEGMENT_DATA)
+    {
         strncpy(aout_sym.symbol, "__dataoff", 60);
     }
     if(_seg == SEGMENT_BSS)
     {
         aout_sym.type |= AOUT_SYMTYPE_BSSSEG;
+    }
+    if(sym->seg == SEGMENT_BSS)
+    {
         strncpy(aout_sym.symbol, "__bssoff", 60);
     }
     aout_sym.type |= offset & AOUT_MASK_OFFSET;

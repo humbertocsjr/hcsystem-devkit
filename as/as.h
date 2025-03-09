@@ -88,6 +88,7 @@ typedef struct symbol_t
     int sym;
     char *name;
     int32_t value;
+    segment_t seg;
 } symbol_t;
 
 // as.c
@@ -124,6 +125,7 @@ void open_out(char *filename);
 void remove_out();
 void close_out();
 void set_segment(segment_t seg);
+segment_t get_segment();
 void set_output_segment(segment_t seg);
 void reserve(int size);
 void outb(int8_t value);

@@ -8,9 +8,9 @@
       "program": "${workspaceFolder}/bindbg/i86-ld",
       "args": [
         "-f",
-        "v7",
+        "com",
         "-o",
-        "tests/test0.small",
+        "tests/test0.com",
         "tests/test0.o"
       ],
       "stopAtEntry": true,

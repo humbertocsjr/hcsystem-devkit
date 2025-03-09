@@ -116,8 +116,9 @@ void gen_store_global_direct(dtype_t dt, char *name, int value)
     else error("invalid data type.");
 }
 
-void gen_function(char *name)
+void gen_function(char *name, int is_public)
 {
+    if(is_public)out("global _%s", name);
     out("_%s:", name);
     out("push bp");
     out("mov bp, sp");
@@ -421,4 +422,17 @@ void gen_reserve_stack(int size)
 void gen_restore_stack(int size)
 {
     out("add sp, %d", size);
+}
+
+void gen_load_local(dtype_t dt, char *name, int offset)
+{
+    if(is_char_dtype(dt))
+    {
+        out("mov al, [bp+%d] ; %s", offset, name);
+    }
+    else if(is_integer_dtype(dt))
+    {
+        out("mov ax, [bp+%d] ; %s", offset, name);
+    }
+    else error("invalid data type.");
 }
