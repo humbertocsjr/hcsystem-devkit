@@ -4,7 +4,7 @@ static char _exprs_text[EXPRS_TEXT_MAX];
 static int _exprs_text_next = 0;
 static expr_t _exprs[EXPRS_TEXT_MAX];
 static int _exprs_next = 0;
-expr_t *expr_comma(dtype_t type);
+expr_t *expr_comma(dtype_t type, function_t *fn, var_t *v);
 
 expr_t *add_expr(tok_t tok, dtype_t type, uint16_t line, uint16_t column, char *text)
 {
@@ -54,6 +54,7 @@ void reset_exprs()
 expr_t *expr_value(dtype_t type)
 {
     expr_t *e = 0;
+    function_t *fn;
     if(is_token(TOK_MUL))
     {
         e = add_expr_from_token(get_token(), type);
@@ -84,7 +85,11 @@ expr_t *expr_value(dtype_t type)
         e = add_expr_from_token(get_token(), type);
         scan();
         match(TOK_PARAMS_OPEN, "'('");
-        e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED);
+        fn = find_function(e->text);
+        if(fn)
+            e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED, fn, fn->args);
+        else
+            e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED, 0, 0);
         match(TOK_PARAMS_CLOSE, "')'");
     }
     else if(is_token(TOK_SYMBOL) && is_peek(TOK_INDEX_OPEN))
@@ -96,7 +101,7 @@ expr_t *expr_value(dtype_t type)
         match(TOK_INDEX_CLOSE, "']'");
         if(is_token(TOK_PARAMS_OPEN))
         {
-            e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED);
+            e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED, 0, 0);
         }
     }
     else if(is_token(TOK_SYMBOL))
@@ -228,16 +233,28 @@ expr_t *expr_attrib(dtype_t type)
     return e;
 }
 
-expr_t *expr_comma(dtype_t type)
+expr_t *expr_comma(dtype_t type, function_t *fn, var_t *v)
 {
-    expr_t *e = expr_attrib(type);
+    expr_t *e;
     expr_t *op;
+    if(v)
+        e = expr_attrib(v->type);
+    else
+        e = expr_attrib(type);
     while(is_token(TOK_COMMA))
     {
         op = add_expr_from_token(get_token(), type);
         scan();
         op->left = e;
-        op->right = expr_attrib(type);
+        if(v)
+        {
+            v = v->next;
+            op->right = expr_attrib(v->type);
+        }
+        else
+        {
+            op->right = expr_attrib(type);
+        }
         e = op;
     }
     return e;

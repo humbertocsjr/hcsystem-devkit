@@ -257,6 +257,7 @@ void parse_expr(dtype_t dt, expr_t *e)
             }
             else if((fn = find_function(e->text)))
             {
+                if(e->left) error_at(e->line, e->column, "invalid index use.");
                 if(e->right)
                 {
                     parse_expr(DTYPE_INT | DTYPE_INT, e->right);
