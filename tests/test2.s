@@ -1,7 +1,7 @@
 section .text
-section .data
+section .bss
 _b:
-dw 123
+resb 2
 section .text
 section .bss
 _z:
@@ -15,6 +15,16 @@ global _start
 _start:
 push bp
 mov bp, sp
+sub sp, 2
+mov ax, 45
+push ax
+mov ax, 34
+push ax
+mov ax, 12
+push ax
+mov ax, [bp+-2] ; a
+call ax
+add sp, 6
 mov sp, bp
 pop bp
 ret
@@ -28,6 +38,12 @@ mov [_c], ax
 mov si, [_c]
 mov ax, [si]
 mov [_b], ax
+mov ax, 456
+push ax
+mov ax, 123
+push ax
+call _start
+add sp, 4
 mov word [_b], 1
 L6:
 mov ax, [_b]

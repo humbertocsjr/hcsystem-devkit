@@ -441,3 +441,13 @@ void gen_load_local(dtype_t dt, char *name, int offset)
     }
     else error("invalid data type.");
 }
+
+void gen_call_acc()
+{
+    out("call ax");
+}
+
+void gen_call(char *name)
+{
+    out("call _%s", name);
+}

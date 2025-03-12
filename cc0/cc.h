@@ -248,5 +248,6 @@ void gen_goto(char *name);
 void gen_reserve_stack(int size);
 void gen_restore_stack(int size);
 void gen_load_local(dtype_t dt, char *name, int offset);
-
+void gen_call_acc();
+void gen_call(char *name);
 #endif

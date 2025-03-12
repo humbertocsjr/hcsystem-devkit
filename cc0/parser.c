@@ -108,6 +108,7 @@ void parse_address_expr(dtype_t dt, expr_t *e)
             {
                 gen_set_acc_global(v->name);
             }
+            else error_at(e->line, e->column, "not implemented");
             break;
         default:
             error_at(e->line, e->column, "invalid write expression.");
@@ -126,6 +127,7 @@ void parse_write_expr(dtype_t dt, expr_t *e)
                 cast_dtype(dt, v->type);
                 gen_store_global(v->type, v->name);
             }
+            else error_at(e->line, e->column, "not implemented");
             break;
         default:
             error_at(e->line, e->column, "invalid write expression.");
@@ -158,7 +160,11 @@ void parse_common_expr(dtype_t dt, expr_t *e, int can_optimize_left)
 void parse_expr(dtype_t dt, expr_t *e)
 {
     var_t *v;
+    expr_t *arg;
+    function_t *fn;
     dtype_t sub_dt;
+    int size;
+    if(!e) return;
     switch(e->tok)
     {
         case TOK_ADDRESSOF:
@@ -171,6 +177,7 @@ void parse_expr(dtype_t dt, expr_t *e)
                 {
                     gen_load_ref_global(ref_dtype(dt), v->name);
                 }
+                else error_at(e->line, e->column, "not implemented");
             }
             else
             {
@@ -178,9 +185,19 @@ void parse_expr(dtype_t dt, expr_t *e)
                 gen_load(deref_dtype(dt));
             }
             break;
+        case TOK_COMMA:
+            parse_expr(DTYPE_INT | DTYPE_INT, e->right);
+            gen_push_acc();
+            parse_expr(DTYPE_INT | DTYPE_INT, e->left);
+            break;
         case TOK_SYMBOL:
             if((v = find_local_var(_function, e->text)))
             {
+                if(e->right)
+                {
+                    parse_expr(DTYPE_INT | DTYPE_INT, e->right);
+                    gen_push_acc();
+                }
                 if(e->left)
                 {
                     gen_set_acc_local(v->name, v->offset);
@@ -193,9 +210,26 @@ void parse_expr(dtype_t dt, expr_t *e)
                     gen_load_local(v->type, v->name, v->offset);
                     cast_dtype(v->type, dt);
                 }
+                if(e->right)
+                {
+                    gen_call_acc();
+                    arg = e->right;
+                    size = 0;
+                    while(arg)
+                    {
+                        size += get_size(DTYPE_INT);
+                        arg = arg->left;
+                    }
+                    if(size)gen_restore_stack(size);
+                }
             }
             else if((v = find_global_var(e->text)))
             {
+                if(e->right)
+                {
+                    parse_expr(DTYPE_INT | DTYPE_INT, e->right);
+                    gen_push_acc();
+                }
                 if(e->left)
                 {
                     gen_set_acc_global(v->name);
@@ -208,7 +242,37 @@ void parse_expr(dtype_t dt, expr_t *e)
                     gen_load_global(v->type, v->name);
                     cast_dtype(v->type, dt);
                 }
+                if(e->right)
+                {
+                    gen_call_acc();
+                    arg = e->right;
+                    size = 0;
+                    while(arg)
+                    {
+                        size += get_size(DTYPE_INT);
+                        arg = arg->left;
+                    }
+                    if(size)gen_restore_stack(size);
+                }
             }
+            else if((fn = find_function(e->text)))
+            {
+                if(e->right)
+                {
+                    parse_expr(DTYPE_INT | DTYPE_INT, e->right);
+                    gen_push_acc();
+                }
+                gen_call(e->text);
+                arg = e->right;
+                size = 0;
+                while(arg)
+                {
+                    size += get_size(DTYPE_INT);
+                    arg = arg->left;
+                }
+                if(size)gen_restore_stack(size);
+            }
+            else error_at(e->line, e->column, "not implemented");
             break;
         case TOK_INTEGER:
             gen_set_acc(e->value);

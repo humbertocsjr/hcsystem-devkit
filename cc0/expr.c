@@ -83,7 +83,9 @@ expr_t *expr_value(dtype_t type)
     {
         e = add_expr_from_token(get_token(), type);
         scan();
+        match(TOK_PARAMS_OPEN, "'('");
         e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED);
+        match(TOK_PARAMS_CLOSE, "')'");
     }
     else if(is_token(TOK_SYMBOL) && is_peek(TOK_INDEX_OPEN))
     {

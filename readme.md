@@ -85,7 +85,7 @@ i86-ld -f com -o test.com -L /libs/path/ -l libtest.a test2.o test3.o
     - [ ] Add C Pre-processor
 
 - [ ] 0.94-beta
-    - [ ] Add C Compiler arguments parser
+    - [x] Add C Compiler arguments parser
 
 - [x] 0.93-beta
     - [x] Fix LD Symbols Bug
