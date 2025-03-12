@@ -4,6 +4,7 @@ static char _exprs_text[EXPRS_TEXT_MAX];
 static int _exprs_text_next = 0;
 static expr_t _exprs[EXPRS_TEXT_MAX];
 static int _exprs_next = 0;
+expr_t *expr_comma(dtype_t type);
 
 expr_t *add_expr(tok_t tok, dtype_t type, uint16_t line, uint16_t column, char *text)
 {
@@ -82,7 +83,19 @@ expr_t *expr_value(dtype_t type)
     {
         e = add_expr_from_token(get_token(), type);
         scan();
-        e->right = expr(DTYPE_INT | DTYPE_SIGNED);
+        e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED);
+    }
+    else if(is_token(TOK_SYMBOL) && is_peek(TOK_INDEX_OPEN))
+    {
+        e = add_expr_from_token(get_token(), type);
+        scan();
+        match(TOK_INDEX_OPEN, "'['");
+        e->left = expr(DTYPE_INT | DTYPE_UNSIGNED);
+        match(TOK_INDEX_CLOSE, "']'");
+        if(is_token(TOK_PARAMS_OPEN))
+        {
+            e->right = expr_comma(DTYPE_INT | DTYPE_SIGNED);
+        }
     }
     else if(is_token(TOK_SYMBOL))
     {
@@ -208,6 +221,21 @@ expr_t *expr_attrib(dtype_t type)
         scan();
         op->left = e;
         op->right = expr_eq(type);
+        e = op;
+    }
+    return e;
+}
+
+expr_t *expr_comma(dtype_t type)
+{
+    expr_t *e = expr_attrib(type);
+    expr_t *op;
+    while(is_token(TOK_COMMA))
+    {
+        op = add_expr_from_token(get_token(), type);
+        scan();
+        op->left = e;
+        op->right = expr_attrib(type);
         e = op;
     }
     return e;

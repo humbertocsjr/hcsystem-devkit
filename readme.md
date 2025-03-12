@@ -76,13 +76,24 @@ i86-ld -f com -o test.com -L /libs/path/ -l libtest.a test2.o test3.o
 - [ ] 1.00-final
     - [ ] Add Far pointer
 
-- [ ] 0.94-beta
+- [ ] 0.96-beta
     - [ ] Add b2o tool (binary to object converter)
 
-- [ ] 0.93-beta
+- [ ] 0.95-beta
     - [ ] Add Minimal DOS Library
         - [ ] Add _start routine
     - [ ] Add C Pre-processor
+
+- [ ] 0.94-beta
+    - [ ] Add C Compiler arguments parser
+
+- [x] 0.93-beta
+    - [x] Fix LD Symbols Bug
+    - [x] Add missing opcodes to i86 AS
+        - [x] Segment selectors
+        - [x] retf
+    - [x] Fix Size/Nm multiple objects issue
+    - [x] Add SubC Compiler
 
 - [x] 0.92-beta
     - [x] Add C Compiler minimal prototype

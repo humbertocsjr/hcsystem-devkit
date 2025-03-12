@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     }
     for(i = 1; i < argc; i++)
     {
-        if((file = fopen(argv[1], "rb")))
+        if((file = fopen(argv[i], "rb")))
         {
             fread(&aout, 1, sizeof(aout_t), file);
             if

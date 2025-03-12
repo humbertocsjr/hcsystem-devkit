@@ -90,9 +90,10 @@ symbol_t *find_symbol(char *name)
             {
                 if(_files[lib].file && _files[lib].aout_header.signature == AOUT_HC_IX_OBJ)
                 {
-                    fseek(_files[lib].file, _files[lib].aout_offset + _files[lib].aout_header.text + _files[lib].aout_header.data + sizeof(aout_t), SEEK_SET);
+                    //fseek(_files[lib].file, _files[lib].aout_offset + _files[lib].aout_header.text + _files[lib].aout_header.data + sizeof(aout_t), SEEK_SET);
                     for(s = 0; s < _files[lib].aout_header.syms; s++)
                     {
+                        fseek(_files[lib].file, _files[lib].aout_offset + _files[lib].aout_header.text + _files[lib].aout_header.data + sizeof(aout_t) + (s * sizeof(aout_symbol_t)), SEEK_SET);
                         fread(&aout_sym, 1, sizeof(aout_symbol_t), _files[lib].file);
                         if((aout_sym.type & AOUT_SYMTYPE_GLOBAL) && !strncmp(aout_sym.symbol, name, 60))
                         {
@@ -121,11 +122,12 @@ void make_symbol_tree(symbol_t *root)
     {
         if(_files[lib].file && _files[lib].aout_header.signature == AOUT_HC_IX_OBJ)
         {
-            fseek(_files[lib].file, _files[lib].aout_offset + _files[lib].aout_header.text + _files[lib].aout_header.data + sizeof(aout_t), SEEK_SET);
+            //fseek(_files[lib].file, _files[lib].aout_offset + _files[lib].aout_header.text + _files[lib].aout_header.data + sizeof(aout_t), SEEK_SET);
             for(s = 0; s < _files[lib].aout_header.syms; s++)
             {
+                fseek(_files[lib].file, _files[lib].aout_offset + _files[lib].aout_header.text + _files[lib].aout_header.data + sizeof(aout_t) + (s * sizeof(aout_symbol_t)), SEEK_SET);
                 fread(&aout_sym, 1, sizeof(aout_symbol_t), _files[lib].file);
-                switch(aout_sym.type & 0xf)
+                switch(aout_sym.type & AOUT_MASK_SYMTYPE)
                 {
                     case AOUT_SYMTYPE_GLOBAL:
                         sym = 0;
@@ -134,6 +136,7 @@ void make_symbol_tree(symbol_t *root)
                             if(_symbols[i].name && !strcmp(_symbols[i].name, aout_sym.symbol))
                             {
                                 sym = &_symbols[i];
+                                break;
                             }
                         }
                         if(!sym)
@@ -154,7 +157,7 @@ void make_symbol_tree(symbol_t *root)
                     case AOUT_SYMTYPE_REFERENCE:
                         if(!(sym = find_symbol(aout_sym.symbol)))
                         {
-                            fprintf(stderr, "error: symbol not found: %s", aout_sym.symbol);
+                            fprintf(stderr, "error: symbol not found: %s\n", aout_sym.symbol);
                             if(_out)
                             {
                                 fclose(_out);

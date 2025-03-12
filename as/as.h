@@ -93,6 +93,7 @@ typedef struct symbol_t
 
 // as.c
 extern aout_t _header;
+int get_pass();
 void inc_changes();
 
 // names.c
@@ -107,6 +108,7 @@ void init_scanner();
 expr_t * curr();
 expr_t * peek();
 expr_t * next();
+void reset_exprs();
 expr_t *clone(expr_t *e);
 void free_tree(expr_t *e);
 void open_source(source_t *src, char *filename);
@@ -127,6 +129,7 @@ void close_out();
 void set_segment(segment_t seg);
 segment_t get_segment();
 void set_output_segment(segment_t seg);
+int can_output();
 void reserve(int size);
 void outb(int8_t value);
 void outw(int16_t value);

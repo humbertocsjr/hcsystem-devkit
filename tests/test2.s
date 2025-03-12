@@ -49,6 +49,11 @@ add ax, 1
 mov [_b], ax
 jmp L6
 L5:
+mov ax, _c
+add ax, 100
+mov si, ax
+mov ax, [si]
+mov [_b], ax
 mov sp, bp
 pop bp
 ret

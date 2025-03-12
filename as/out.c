@@ -45,12 +45,24 @@ segment_t get_segment()
     return _seg;
 }
 
+int can_output()
+{
+    return _out_seg != -1;
+}
+
 void reserve(int size)
 {
-
     if(_seg == SEGMENT_TEXT) _header.text+=size;
     if(_seg == SEGMENT_DATA) _header.data+=size;
     if(_seg == SEGMENT_BSS) _header.bss+=size;
+    if(_seg != _out_seg) return;
+    if(_seg != SEGMENT_BSS)
+    {
+        while(size-- > 0)
+        {
+            fputc(0, _out);
+        }
+    }
 }
 
 void outb(int8_t value)

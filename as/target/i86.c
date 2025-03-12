@@ -215,8 +215,14 @@ void emit_disp16(opcode_t *op, param_t *params, int params_qty)
 
 void emit_disp8(opcode_t *op, param_t *params, int params_qty)
 {
+    int32_t value;
     outb(op->opcodes[0]);
-    outb(parse_expr(params[0].value, -1, 2));
+    value = parse_expr(params[0].value, -1, 2);
+    if(value < INT8_MIN || INT8_MAX < value)
+    {
+        error_at(params[0].value, "invalid offset: %d", value);
+    }
+    outb(value);
 }
 
 void emit_value16(opcode_t *op, param_t *params, int params_qty)
@@ -656,8 +662,10 @@ opcode_t _opcodes[] =
     {"jmp far", 0, {ARG_PTR, ARG_NONE}, {0xff, 0x28}, emit_mrm_ptr},
     {"ret", "retn", {ARG_NONE}, {0xc3}, emit_simple},
     {"ret", "retn", {ARG_VALUE, ARG_NONE}, {0xc2}, emit_value16},
-    {"reti", 0, {ARG_NONE}, {0xcb}, emit_simple},
-    {"reti", 0, {ARG_VALUE, ARG_NONE}, {0xca}, emit_value16},
+    {"reti", "retf", {ARG_NONE}, {0xcb}, emit_simple},
+    {"reti", "retf", {ARG_VALUE, ARG_NONE}, {0xca}, emit_value16},
+    {"jc", 0, {ARG_VALUE, ARG_NONE}, {0x72}, emit_disp8},
+    {"jnc", 0, {ARG_VALUE, ARG_NONE}, {0x73}, emit_disp8},
     {"jz", "je", {ARG_VALUE, ARG_NONE}, {0x74}, emit_disp8},
     {"jl", "jnge", {ARG_VALUE, ARG_NONE}, {0x7c}, emit_disp8},
     {"jle", "jng", {ARG_VALUE, ARG_NONE}, {0x7e}, emit_disp8},
@@ -691,5 +699,9 @@ opcode_t _opcodes[] =
     {"hlt", 0, {ARG_NONE}, {0xf4}, emit_simple},
     {"wait", 0, {ARG_NONE}, {0x9b}, emit_simple},
     {"lock", 0, {ARG_NONE}, {0xf0}, emit_simple},
+    {"es", 0, {ARG_NONE}, {0x26}, emit_simple},
+    {"cs", 0, {ARG_NONE}, {0x2e}, emit_simple},
+    {"ss", 0, {ARG_NONE}, {0x36}, emit_simple},
+    {"ds", 0, {ARG_NONE}, {0x3e}, emit_simple},
     {0, 0, 0, 0}
 };

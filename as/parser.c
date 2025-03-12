@@ -188,6 +188,7 @@ void parse()
     int32_t value;
     symbol_t *sym;
     char mnemonic[MNEMONIC_MAX];
+    reset_exprs();
     if(is_token(curr(), TOKEN_NEW_LINE))
     {
         next();
@@ -247,7 +248,18 @@ void parse()
         next();
         while(!is_token(curr(), TOKEN_EOF) && !is_token(curr(), TOKEN_NEW_LINE))
         {
-            outb(parse_expr(expr(), 0, 0));
+            if(is_token(curr(), TOKEN_STRING))
+            {
+                for(i = 0; i < strlen(curr()->text); i++)
+                {
+                    outb(curr()->text[i]);
+                }
+                next();
+            }
+            else
+            {
+                outb(parse_expr(expr(), 0, 0));
+            }
             if(!is_token(curr(), TOKEN_COMMA)) break;
             next();
         }
@@ -281,9 +293,15 @@ void parse()
     }
     else if(is_token(curr(), TOKEN_SYMBOL) && is_token(peek(), TOKEN_LABEL))
     {
-        add_symbol(SYM_LABEL, curr()->text, get_offset());
+        sym = add_symbol(SYM_LABEL, curr()->text, get_offset());
         next();
         next();
+        if(is(curr(), "equ"))
+        {
+            next();
+            sym->value = parse_expr(expr(), 0, 0);
+            sym->sym = SYM_CONST;
+        }
         return;
     }
     else if(is_token(curr(), TOKEN_SYMBOL) && is(peek(), "equ"))

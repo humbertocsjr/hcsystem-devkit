@@ -162,6 +162,31 @@ expr_t *next()
             read_char();
         }
     }
+    else if(is_char('\''))
+    {
+        _src->peek.token = TOKEN_INTEGER;
+        read_char();
+        while(!is_char(0) && !is_char('\''))
+        {
+            _src->peek.value <<= 8;
+            _src->peek.value |= get_char();
+            read_char();
+        }
+        read_char();
+    }
+    else if(is_char('\"'))
+    {
+        _src->peek.token = TOKEN_STRING;
+        read_char();
+        while(!is_char(0) && !is_char('\"'))
+        {
+            cat[0] = get_char();
+            cat[1] = 0;
+            strlcat(_src->peek.text, cat, TOKEN_MAX);
+            read_char();
+        }
+        read_char();
+    }
     else if(is_char('+'))
     {
         _src->peek.token = TOKEN_ADD;
@@ -234,6 +259,15 @@ expr_t *next()
     }
     else error_at(&_src->peek, "unknown token: '%c'", _src->c);
     return curr();
+}
+
+void reset_exprs()
+{
+    int i;
+    for(i = 0; i < EXPRS_MAX; i++)
+    {
+        _exprs[i].token = TOKEN_EMPTY;
+    }
 }
 
 expr_t *clone(expr_t *e)

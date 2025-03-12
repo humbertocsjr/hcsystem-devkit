@@ -1,4 +1,5 @@
-xor ax, 0x1234
-xor bx, 0x1234
-xor cx, 0x1234
-xor ah, 0x12
+bits 16
+cpu 8086
+jc tmp
+jnc tmp
+tmp:

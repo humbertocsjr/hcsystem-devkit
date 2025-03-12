@@ -5,6 +5,7 @@ static int _case_label = 0;
 static int _break_label = 0;
 static int _continue_label = 0;
 static int _first_case = 0;
+void parse_expr(dtype_t dt, expr_t *e);
 
 dtype_t parse_dtype()
 {
@@ -73,6 +74,28 @@ dtype_t get_dtype_expr(expr_t *e)
             break;
     }
     return DTYPE_UNKNOWN;
+}
+
+void parse_index_expr(expr_t *e, var_t *v)
+{
+    if(e->left->tok == TOK_INTEGER)
+    {
+        gen_add_direct(get_size(v->type) * e->left->value);
+    }
+    else if(get_size(v->type) == 1)
+    {
+        gen_push_acc();
+        parse_expr(DTYPE_INT | DTYPE_UNSIGNED, e->left);
+    }
+    else
+    {
+        gen_push_acc();
+        parse_expr(DTYPE_INT | DTYPE_UNSIGNED, e->left);
+        gen_set_aux(get_size(v->type));
+        gen_umul();
+        gen_pop_aux();
+        gen_add();
+    }
 }
 
 void parse_address_expr(dtype_t dt, expr_t *e)
@@ -158,13 +181,33 @@ void parse_expr(dtype_t dt, expr_t *e)
         case TOK_SYMBOL:
             if((v = find_local_var(_function, e->text)))
             {
-                gen_load_local(v->type, v->name, v->offset);
-                cast_dtype(v->type, dt);
+                if(e->left)
+                {
+                    gen_set_acc_local(v->name, v->offset);
+                    parse_index_expr(e, v);
+                    gen_load(v->type);
+                    cast_dtype(v->type, dt);
+                }
+                else
+                {
+                    gen_load_local(v->type, v->name, v->offset);
+                    cast_dtype(v->type, dt);
+                }
             }
             else if((v = find_global_var(e->text)))
             {
-                gen_load_global(v->type, v->name);
-                cast_dtype(v->type, dt);
+                if(e->left)
+                {
+                    gen_set_acc_global(v->name);
+                    parse_index_expr(e, v);
+                    gen_load(v->type);
+                    cast_dtype(v->type, dt);
+                }
+                else
+                {
+                    gen_load_global(v->type, v->name);
+                    cast_dtype(v->type, dt);
+                }
             }
             break;
         case TOK_INTEGER:

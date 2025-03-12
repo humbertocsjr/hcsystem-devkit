@@ -2,6 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "i86-ld kernel",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bindbg/i86-ld",
+      "args": ["-o", "kernel/kernel.ap", "-f", "hcsys", "kernel/kernel.o", "kernel/cothread.o", "kernel/tty.o", "kernel/volume.o", "kernel/lang/enus.o"],
+      "preLaunchTask": "make all",
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}/../hcsystem/",
+      "environment": [],
+      "MIMode": "gdb",
+      "setupCommands": [
+          {
+              "description": "Enable pretty-printing for gdb",
+              "text": "-enable-pretty-printing",
+              "ignoreFailures": true
+          }
+      ]
+    },
+    {
       "name": "i86-ld",
       "type": "cppdbg",
       "request": "launch",
@@ -11,7 +30,8 @@
         "com",
         "-o",
         "tests/test0.com",
-        "tests/test0.o"
+        "tests/test0.o",
+        "tests/test1.o"
       ],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",

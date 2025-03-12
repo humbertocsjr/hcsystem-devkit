@@ -15,7 +15,7 @@ void output_bin(int stack_size, int include_bss, int32_t bin_offset)
     entry_sym = find_symbol("_start");
     if(!entry_sym)
     {
-        fprintf(stderr, "error: entry symbol (_start) not found.");
+        fprintf(stderr, "error: entry symbol (_start) not found.\n");
         exit(1);
     }
     add_symbol("__segoff", 0);
@@ -38,7 +38,7 @@ void output_bin(int stack_size, int include_bss, int32_t bin_offset)
             size += get_value("__etext") + get_value("__edata") + get_value("__end");
             if(size >= 0xffe0)
             {
-                fprintf(stderr, "text/data/bss segment size overflow.");
+                fprintf(stderr, "text/data/bss segment size overflow.\n");
                 fclose(_out);
                 unlink(_out_name);
                 exit(1);

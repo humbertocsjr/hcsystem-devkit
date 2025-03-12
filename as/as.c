@@ -2,6 +2,12 @@
 
 aout_t _header;
 int _changed = 0;
+int _pass = 0;
+
+int get_pass()
+{
+    return _pass;
+}
 
 void inc_changes()
 {
@@ -63,6 +69,7 @@ int main(int argc, char **argv)
     {
         reset();
         _changed = 0;
+        _pass++;
         for(i = optind; i < argc; i++)
         {
             process_file(argv[i]);

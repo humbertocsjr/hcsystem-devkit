@@ -13,7 +13,7 @@ void output_aout16(int stack_size, int include_bss)
     entry_sym = find_symbol("_start");
     if(!entry_sym)
     {
-        fprintf(stderr, "error: entry symbol (_start) not found.");
+        fprintf(stderr, "error: entry symbol (_start) not found.\n");
         exit(1);
     }
     add_symbol("__segoff", 0);
@@ -44,7 +44,7 @@ void output_aout16(int stack_size, int include_bss)
         }
         if(overflow_msg)
         {
-            fprintf(stderr, "%s", overflow_msg);
+            fprintf(stderr, "%s\n", overflow_msg);
             fclose(_out);
             unlink(_out_name);
             exit(1);

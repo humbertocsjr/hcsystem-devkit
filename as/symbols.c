@@ -31,6 +31,7 @@ symbol_t *add_symbol(int sym, char *name, int32_t value)
         {
             _symbols[i].value = value;
             _symbols[i].seg = get_segment();
+            if(root_name) _last_root_symbol = &_symbols[i];
             return &_symbols[i];
         }
     }
@@ -54,11 +55,13 @@ symbol_t *add_symbol(int sym, char *name, int32_t value)
 void set_symbol(char *name, int32_t value)
 {
     int i;
+    int root_name = 1;
     if(name[0] == '.' && _last_root_symbol)
     {
         strncpy(_temp_name, _last_root_symbol->name, TOKEN_MAX);
         strlcat(_temp_name, name, TOKEN_MAX);
         name = _temp_name;
+        root_name = 0;
     }
     for(i = 0; i < SYMBOLS_MAX; i++)
     {
@@ -67,6 +70,7 @@ void set_symbol(char *name, int32_t value)
             if(_symbols[i].value != value) inc_changes();
             _symbols[i].value = value;
             _symbols[i].seg = get_segment();
+            if(root_name) _last_root_symbol = &_symbols[i];
             return;
         }
     }
@@ -88,6 +92,10 @@ symbol_t *get_symbol(char *name)
         {
             return &_symbols[i];
         }
+    }
+    if(get_pass() == 2)
+    {
+        add_symbol(SYM_EXTERN, name, 0);
     }
     return 0;
 }

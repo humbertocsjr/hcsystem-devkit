@@ -4,6 +4,7 @@ all native: bindos binwnt binlin bindbg binpsx
 	@$(MAKE) ar $@
 	@$(MAKE) as $@
 	@$(MAKE) cc0 $@
+	@$(MAKE) scc $@
 	@$(MAKE) nm $@
 	@$(MAKE) size $@
 	@$(MAKE) ld $@
@@ -14,6 +15,7 @@ clean:
 	@$(MAKE) ar $@
 	@$(MAKE) as $@
 	@$(MAKE) cc0 $@
+	@$(MAKE) scc $@
 	@$(MAKE) nm $@
 	@$(MAKE) size $@
 	@$(MAKE) ld $@
@@ -38,6 +40,15 @@ binpsx:
 	@mkdir -p binpsx
 
 
+test-scc-linux: all
+	rm -f tests/test3.s
+	binlin/i86-scc -c -o tests/test3.o tests/test3.c
+	binlin/i86-as -o tests/testcrt.o tests/testcrt.s
+	binlin/i86-ld -f com -o tests/test3.com tests/testcrt.o tests/test3.o
+	binlin/i86-size tests/test3.o
+	binlin/i86-nm tests/test3.o
+	ndisasm -b 16 -o 0x100 tests/test3.com > tests/test3.dis
+
 test-cc-linux: all
 	rm -f tests/test2.s
 	binlin/i86-cc0 -o tests/test2.s tests/test2.c
@@ -56,11 +67,12 @@ test-cc-dos: all
 
 test-linux: all
 	binlin/i86-as -o tests/test0.o tests/test0.s
-	binlin/i86-ld -f com -b -o tests/test0.com tests/test0.o
-	binlin/i86-ld -f sys -b -o tests/test0.sys tests/test0.o
-	binlin/i86-ld -f v7 -o tests/test0.small tests/test0.o
-	binlin/i86-ld -f v7tiny -b -o tests/test0.tiny tests/test0.o
-	binlin/i86-ld -f hcix -b -o tests/test0.hcix tests/test0.o
+	binlin/i86-as -o tests/test1.o tests/test1.s
+	binlin/i86-ld -f com -b -o tests/test0.com tests/test0.o tests/test1.o
+	binlin/i86-ld -f sys -b -o tests/test0.sys tests/test0.o tests/test1.o
+	binlin/i86-ld -f v7 -o tests/test0.small tests/test0.o tests/test1.o
+	binlin/i86-ld -f v7tiny -b -o tests/test0.tiny tests/test0.o tests/test1.o
+	binlin/i86-ld -f hcix -b -o tests/test0.hcix tests/test0.o tests/test1.o
 	binlin/i86-size tests/test0.hcix
 	ndisasm -b 16 -o 0x100 tests/test0.com > tests/test0.com.dis
 	ndisasm -b 16 -e 0x10 -o 0 tests/test0.hcix > tests/test0.hcix.dis
@@ -68,11 +80,12 @@ test-linux: all
 
 test-dos: all
 	emu2 bindos/i86-as.exe -o tests/test0.o tests/test0.s
-	emu2 bindos/i86-ld.exe -f com -o tests/test0.com tests/test0.o
-	emu2 bindos/i86-ld.exe -f sys -o tests/test0.sys tests/test0.o
-	emu2 bindos/i86-ld.exe -f v7 -o tests/test0.small tests/test0.o
-	emu2 bindos/i86-ld.exe -f v7tiny -b -o tests/test0.tiny tests/test0.o
-	emu2 bindos/i86-ld.exe -f hcix -b -o tests/test0.hcix tests/test0.o
+	emu2 bindos/i86-as.exe -o tests/test1.o tests/test1.s
+	emu2 bindos/i86-ld.exe -f com -o tests/test0.com tests/test0.o tests/test1.o
+	emu2 bindos/i86-ld.exe -f sys -o tests/test0.sys tests/test0.o tests/test1.o
+	emu2 bindos/i86-ld.exe -f v7 -o tests/test0.small tests/test0.o tests/test1.o
+	emu2 bindos/i86-ld.exe -f v7tiny -b -o tests/test0.tiny tests/test0.o tests/test1.o
+	emu2 bindos/i86-ld.exe -f hcix -b -o tests/test0.hcix tests/test0.o tests/test1.o
 	emu2 bindos/i86-size.exe tests/test0.hcix
 	ndisasm -b 16 -o 0x100 tests/test0.com > tests/test0.com.dis
 	ndisasm -b 16 -e 0x10 -o 0 tests/test0.hcix > tests/test0.hcix.dis
@@ -117,6 +130,7 @@ install: all
 	@install binpsx/i86-nm /usr/local/bin/i86-nm
 	@install binpsx/i86-size /usr/local/bin/i86-size
 	@install binpsx/i86-cc0 /usr/local/bin/i86-cc0
+	@install binpsx/i86-scc /usr/local/bin/i86-scc
 	@echo [INSTALL] /usr/local/lib/hcsystem
 	@install -d /usr/local/lib/hcsystem
 	@install lib/libc-dos.a /usr/local/lib/hcsystem/libc-dos.a

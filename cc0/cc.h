@@ -235,6 +235,7 @@ void gen_set_acc_if_ug();
 void gen_set_acc_if_sge();
 void gen_set_acc_if_uge();
 void gen_set_acc_global(char *name);
+void gen_set_acc_local(char *name, int offset);
 void gen_load(dtype_t dt);
 void gen_load_ref_global(dtype_t dt, char *name);
 void gen_jump_if_true(int lbl);

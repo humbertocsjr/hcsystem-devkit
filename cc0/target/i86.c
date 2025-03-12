@@ -333,6 +333,11 @@ void gen_set_acc_global(char *name)
     out("mov ax, _%s", name);
 }
 
+void gen_set_acc_local(char *name, int offset)
+{
+    out("lea ax, [bp+%d]", name);
+}
+
 void gen_load(dtype_t dt)
 {
     out("mov si, ax");

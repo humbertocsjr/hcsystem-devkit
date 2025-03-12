@@ -217,7 +217,7 @@ int main(int argc, char **argv)
     _out = fopen(_out_name, "wb+");
     if(!_out)
     {
-        fprintf(stderr, "error: can't open output file: %s", _out_name);
+        fprintf(stderr, "error: can't open output file: %s\n", _out_name);
         return 1;
     }
     for(i = optind; i < argc; i++)
