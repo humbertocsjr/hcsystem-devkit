@@ -15,11 +15,11 @@ clean:
 
 ../binpsx/i86-%: $(SRC) $(HDR) $(I86) Makefile
 	@echo [CC] ${@F} [POSIX]
-	@cc -o $@ $(SRC) $(I86)
+	@cc -D HOST=HOST_POSIX -o $@ $(SRC) $(I86)
 
 ../bindbg/i86-%: $(SRC) $(HDR) $(I86) Makefile
 	@echo [CC] ${@F} [DEBUG]
-	@cc -g -o $@ $(SRC) $(I86)
+	@cc -D HOST=HOST_POSIX -g -o $@ $(SRC) $(I86)
 
 ../binwnt/i86-%: $(SRC) $(HDR) $(I86) Makefile
 	@echo [CC] ${@F} [WINDOWS]

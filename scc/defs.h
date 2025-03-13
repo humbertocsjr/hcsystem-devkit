@@ -12,17 +12,26 @@
 
 #define VERSION		"2025-03-12"
 
+#define HOST_DOS "."
+#define HOST_POSIX "/usr/local/lib/hcsystem/"
+#define HOST_LINUX "/usr/local/lib/hcsystem/"
+#define HOST_WINDOWS "."
+#ifndef HOST
+    #define HOST "."
+#endif
+
 #ifndef SCCDIR
- #define SCCDIR		"."
+ #define SCCDIR		HOST
 #endif
 
 #ifndef AOUTNAME
  #define AOUTNAME	"a.out"
 #endif
 
-#define SCCLIBC		"%s/lib/libscc.a"
+#define DOSLIBC		"-L %s -l libc-dos.a"
+#define HCSLIBC		"-L %s -l libc-hcs.a"
 
-#define PREFIX		'C'
+#define PREFIX		'_'
 #define LPREFIX		'L'
 
 #define INTSIZE		BPW
@@ -165,7 +174,7 @@ enum {
 	EXTERN, FAR, FOR, IDENT, IF, INCR, INT, INTLIT, LBRACE, LBRACK,
 	LPAREN, NOT, QMARK, RBRACE, RBRACK, REGISTER, RETURN, RPAREN,
 	SEMI, SIZEOF, STATIC, STRLIT, STRUCT, SWITCH, TILDE, UNION,
-	VOID, VOLATILE, WHILE, XEOF, XMARK,
+	VOID, VOLATILE, WHILE, XEOF, XMARK, UINT,
 
 	P_DEFINE, P_ELSE, P_ELSENOT, P_ENDIF, P_ERROR, P_IFDEF,
 	P_IFNDEF, P_INCLUDE, P_LINE, P_PRAGMA, P_UNDEF

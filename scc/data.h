@@ -78,5 +78,13 @@ extern_ int	O_componly;
 extern_ int	O_asmonly;
 extern_ int	O_testonly;
 extern_ int	O_stdio;
+extern_ int	O_target;
 extern_ char	*O_outfile;
 extern_ int	O_debug;
+extern_ char O_include[TEXTLEN+1];
+
+enum
+{
+    TARGET_DOS,
+    TARGET_HCS
+};

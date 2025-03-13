@@ -530,7 +530,7 @@ static node *cast(int *lv) {
 	if (LPAREN == Token) {
 		Token = scan();
 		if (	INT == Token || CHAR == Token || VOID == Token ||
-			STRUCT == Token || UNION == Token
+			STRUCT == Token || UNION == Token || UINT == Token
 		) {
 			t = primtype(Token, NULL);
 			Token = scan();

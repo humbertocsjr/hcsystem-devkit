@@ -266,7 +266,7 @@ static int keyword(char *s) {
 		break;
 	case 'u':
 		if (!strcmp(s, "union")) return UNION;
-		if (!strcmp(s, "unsigned")) return PINT;
+		if (!strcmp(s, "unsigned")) return UINT;
 		break;
 	case 'v':
 		if (!strcmp(s, "void")) return VOID;

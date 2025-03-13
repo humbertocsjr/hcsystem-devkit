@@ -157,15 +157,22 @@
 	 char	cmd[TEXTLEN+2];
 	 char	cmd2[TEXTLEN+2];
 	 char	*ofile;
+	 char *ldcmd;
+	 ldcmd = DOSLDCMD;
+	 if(O_target == TARGET_HCS)
+	 	 ldcmd = HCSLDCMD;
  
 	 ofile = O_outfile? O_outfile: AOUTNAME;
-	 if (strlen(ofile) + strlen(LDCMD) + strlen(SCCDIR)*2 >= TEXTLEN)
+	 if (strlen(ofile) + strlen(ldcmd) + strlen(SCCDIR)*2 >= TEXTLEN)
 		 cmderror("linker command too long", NULL);
-	 sprintf(cmd, LDCMD, ofile, SCCDIR, O_stdio? "": "n");
+	 sprintf(cmd, ldcmd, ofile, SCCDIR, O_stdio? "": "n");
 	 k = strlen(cmd);
 	 for (i=0; i<Nf; i++)
 		 k = concat(k, cmd, Files[i]);
-	 k = concat(k, cmd, SCCLIBC);
+	 if(O_target == TARGET_DOS)
+	 	 k = concat(k, cmd, DOSLIBC);
+	 if(O_target == TARGET_HCS)
+	 	 k = concat(k, cmd, HCSLIBC);
 	 concat(k, cmd, SYSLIBC);
 	 sprintf(cmd2, cmd, SCCDIR);
 	 if (O_verbose > 1) printf("%s\n", cmd2);
@@ -182,7 +189,7 @@
  }
  
  static void usage(void) {
-	 printf("Usage: i86-scc [-h] [-ctvNSV] [-d opt] [-o file] [-D macro[=text]]"
+	 printf("Usage: i86-scc [-h] [-ctvNSV] [-i dir] [-f com|hcsys] [-d opt] [-o file] [-D macro[=text]]"
 		 " file [...]\n");
  }
  
@@ -199,6 +206,9 @@
 		 "-N       do not use stdio (can't use printf, etc)\n"
 		 "-S       compile to assembly language\n"
 		 "-V       print version and exit\n"
+		 "-f com   generate .COM executable\n"
+		 "-f hcsys generate HCSystem executable\n"
+		 "-i dir   set system include dir"
 		 "\n" );
  }
  
@@ -238,7 +248,7 @@
  
  int main(int argc, char *argv[]) {
 	 int	i, j;
-	 char	*def;
+	 char	*def, *format;
  
 	 def = NULL;
 	 O_debug = 0;
@@ -247,7 +257,10 @@
 	 O_asmonly = 0;
 	 O_testonly = 0;
 	 O_stdio = 1;
+	 O_target = TARGET_DOS;
 	 O_outfile = NULL;
+	 strcpy(O_include, SCCDIR);
+	 strcat(O_include, "/include/");
 	 for (i=1; i<argc; i++) {
 		 if (*argv[i] != '-') break;
 		 if (!strcmp(argv[i], "-")) {
@@ -256,6 +269,17 @@
 		 }
 		 for (j=1; argv[i][j]; j++) {
 			 switch (argv[i][j]) {
+			 case 'i':
+			 	strcpy(O_include, nextarg(argc, argv, &i, &j));
+				break;
+			 case 'f':
+				 format = nextarg(argc, argv, &i, &j);
+				 if(!strcmp(format, "com"))
+				 	O_target = TARGET_DOS;
+				 else if(!strcmp(format, "hcs") || !strcmp(format, "hcsys"))
+					O_target = TARGET_HCS;
+				 else cmderror("invalid output format", format);
+				 break;
 			 case 'c':
 				 O_componly = 1;
 				 break;

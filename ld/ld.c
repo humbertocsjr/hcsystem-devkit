@@ -80,13 +80,14 @@ void add_library(char *name)
         if(_files[i].file == 0)
         {
             _files[i].file = file;
+            fseek(_files[i].file, aout_offset, SEEK_SET);
             memset(&ar_header, 0, sizeof(ar_t));
             fread(&ar_header, 1, sizeof(ar_t), _files[i].file);
             aout_offset += sizeof(ar_t);
             if(ar_header.signature == AR_AOUT)
             {
                 _files[i].aout_offset = aout_offset;
-                strlcpy(aout_name, _files[i].name, 60);
+                strlcpy(aout_name, ar_header.name, 60);
                 _files[i].name = add_name(aout_name);
                 fread(&_files[i].aout_header, 1, sizeof(aout_t), _files[i].file);
             }
@@ -95,9 +96,7 @@ void add_library(char *name)
 
             }
             else return;
-            fseek(_files[i].file, ar_header.size, SEEK_CUR);
             aout_offset += ar_header.size;
-            return;
         }
     }
 }

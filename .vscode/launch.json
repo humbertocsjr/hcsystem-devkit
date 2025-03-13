@@ -29,9 +29,12 @@
         "-f",
         "com",
         "-o",
-        "tests/test0.com",
-        "tests/test0.o",
-        "tests/test1.o"
+        "tests/test3.com",
+        "tests/test3.o",
+        "-L",
+        "${workspaceFolder}/lib/",
+        "-l",
+        "libc-dos.a"
       ],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
@@ -47,17 +50,20 @@
       ]
     },
     {
-      "name": "i86-basc",
+      "name": "i86-scc",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bindbg/i86-basc",
+      "program": "${workspaceFolder}/bindbg/i86-scc",
       "args": [
+        "-vvvvv",
+        "-f",
+        "com",
         "-o",
-        "tests/test1.o",
-        "tests/test1.bas"
+        "test3.com",
+        "test3.c"
       ],
       "stopAtEntry": true,
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/tests/",
       "environment": [],
       "MIMode": "gdb",
       "preLaunchTask": "make all",

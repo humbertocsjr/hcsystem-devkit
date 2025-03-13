@@ -77,8 +77,7 @@ static void include(void) {
 	if (c == '"')
 		strcpy(path, file);
 	else {
-		strcpy(path, SCCDIR);
-		strcat(path, "/include/");
+		strcpy(path, O_include);
 		strcat(path, file);
 	}
 	if ((inc = fopen(path, "r")) == NULL)

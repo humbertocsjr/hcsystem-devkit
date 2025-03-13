@@ -45,6 +45,12 @@ i86-as -o test.o test.s
 i86-ld -f com -o test.com -L /usr/local/lib/hcsystem -l libdos.a test.o
 ```
 
+- Compile SubC source to DOS .COM [DON'T USE. IN DEVELOPMENT]
+```sh
+i86-sub -c -o test.o test.c
+i86-ld -f com -o test.com -L /usr/local/lib/hcsystem -l libdos.a test.o
+```
+
 - Assemble multiple sources to Library
 ```sh
 i86-as -o test0.o test0.s

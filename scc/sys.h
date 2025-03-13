@@ -6,5 +6,6 @@
 #define OS		"DOS"
 #define AOUTNAME	"aout.exe"
 #define ASCMD		"i86-as -o %s %s"
-#define LDCMD		"i86-ld -f com -o %s %s/lib/%scrt0.o"
+#define DOSLDCMD		"i86-ld -f com -o %s "
+#define HCSLDCMD		"i86-ld -f hcsys -o %s "
 #define SYSLIBC		""

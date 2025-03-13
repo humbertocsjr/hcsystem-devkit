@@ -107,6 +107,7 @@ int primtype(int t, char *s) {
 
 	p = t == CHAR? PCHAR:
 		t == INT? PINT:
+		t == UINT? INTPTR:
 		t == STRUCT? PSTRUCT:
 		t == UNION? PUNION:
 		PVOID;
@@ -616,6 +617,7 @@ void top(void) {
 		break;
 	case CHAR:
 	case INT:
+	case UINT:
 	case VOID:
 		prim = primtype(Token, NULL);
 		Token = scan();

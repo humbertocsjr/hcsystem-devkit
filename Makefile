@@ -42,11 +42,10 @@ binpsx:
 
 test-scc-linux: all
 	rm -f tests/test3.s
-	binlin/i86-scc -c -o tests/test3.o tests/test3.c
-	binlin/i86-as -o tests/testcrt.o tests/testcrt.s
-	binlin/i86-ld -f com -o tests/test3.com tests/testcrt.o tests/test3.o
-	binlin/i86-size tests/test3.o
-	binlin/i86-nm tests/test3.o
+	binlin/i86-scc -vvvv -f com -o tests/test3.com tests/test3.c
+	binlin/i86-scc -vvvv -f hcsys -o tests/test3.small tests/test3.c
+	binlin/i86-size tests/test3.small
+	binlin/i86-nm tests/test3.small
 	ndisasm -b 16 -o 0x100 tests/test3.com > tests/test3.dis
 
 test-cc-linux: all
@@ -122,6 +121,9 @@ distro: all
 	@mcopy -i hcsystem.img license ::/license.txt
 
 install: all
+	@make --no-print-directory install_only
+
+install_only: 
 	@echo [INSTALL] /usr/local/bin
 	@install -d /usr/local/bin
 	@install binpsx/i86-ar /usr/local/bin/i86-ar
@@ -135,6 +137,9 @@ install: all
 	@install -d /usr/local/lib/hcsystem
 	@install lib/libc-dos.a /usr/local/lib/hcsystem/libc-dos.a
 	@install lib/libc-hcs.a /usr/local/lib/hcsystem/libc-hcs.a
+	@echo [INSTALL] /usr/local/lib/hcsystem/include
+	@install -d /usr/local/lib/hcsystem/include
+	@install include/*.h /usr/local/lib/hcsystem/include/
 
 token:
 	@nasm -f bin -o tests/token.bin tests/token.s
